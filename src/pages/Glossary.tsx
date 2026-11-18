@@ -27,13 +27,13 @@ export function Glossary({ focus }: { focus?: string }) {
   }, [focus]);
 
   return (
-    <div className="mx-auto max-w-5xl px-5 pb-24 pt-8 lg:px-10">
+    <div className="mx-auto max-w-[1680px] px-5 pb-24 pt-8 lg:px-10">
       <header className="mb-8">
         <div className="flex items-center gap-2 text-[13px] font-bold text-sky-600 dark:text-sky-300">
           <BookA className="h-4 w-4" /> מילון מונחים
         </div>
         <h1 className="mt-2 text-[32px] font-bold tracking-tight text-fg">כל המונחים במקום אחד</h1>
-        <p className="mt-2 max-w-3xl text-[16px] leading-7 text-muted">
+        <p className="mt-2 text-[16px] leading-7 text-muted">
           המונחים המקצועיים כתובים באנגלית – כך תשמע אותם בעבודה ובראיונות – וההסבר בעברית. לחץ על מונח כדי לעבור לשיעור שבו הוא נלמד.
         </p>
         <div className="relative mt-5 max-w-md">

@@ -1,6 +1,7 @@
 import { AlertTriangle, Info, Lightbulb, ShieldAlert, Sparkles } from 'lucide-react';
 import { Fragment, memo, useMemo, type ReactNode } from 'react';
 import { CodeBlock } from './CodeBlock';
+import { Reveal } from './Reveal';
 
 /**
  * Minimal, dependency-free Markdown renderer for the curriculum:
@@ -152,11 +153,16 @@ const CALLOUTS: Record<string, { icon: typeof Info; cls: string; label: string }
   note: { icon: Info, cls: 'border-sky-500/30 bg-sky-500/[0.07] text-sky-700 dark:text-sky-300', label: 'שים לב' },
 };
 
-export const Markdown = memo(function Markdown({ source }: { source: string }) {
+export const Markdown = memo(function Markdown({ source, reveal = false }: { source: string; reveal?: boolean }) {
   const blocks = useMemo(() => parse(source), [source]);
   return (
     <div className="space-y-4 text-[16px] leading-8 text-muted">
-      {blocks.map((b, i) => {
+      {blocks.map((b, i) => (reveal ? <Reveal key={i} index={i}>{renderBlock(b, i)}</Reveal> : renderBlock(b, i)))}
+    </div>
+  );
+});
+
+function renderBlock(b: Block, i: number): ReactNode {
         switch (b.t) {
           case 'h':
             if (b.level === 2)
@@ -257,7 +263,4 @@ export const Markdown = memo(function Markdown({ source }: { source: string }) {
             );
           }
         }
-      })}
-    </div>
-  );
-});
+}

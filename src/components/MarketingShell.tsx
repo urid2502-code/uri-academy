@@ -1,19 +1,20 @@
-import { Check, Menu, Star, X } from 'lucide-react';
+import { Check, Code2, Menu, Star, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { href } from '../lib/router';
+import { MotionToggle } from './MotionToggle';
 
 const LINKS = [
   { label: 'קורסים', to: href.courses() },
   { label: 'המסלול המלא', to: href.home() },
   { label: 'סימולטור', to: href.simulator() },
+  { label: 'קהילה', to: href.community() },
   { label: 'הכנה לראיון', to: href.interview() },
 ];
 
-/** Full-page dark notebook sheet used by the landing and catalog pages. It is also the scroll container. */
-export function NotebookShell({ children }: { children: ReactNode }) {
+export function MarketingShell({ children }: { children: ReactNode }) {
   return (
-    <div id="main-scroll" data-theme="dark" className="nb-sheet relative h-full overflow-y-auto overflow-x-hidden">
-      <div className="nb-margin relative min-h-full">
+    <div id="main-scroll" data-theme="dark" className="academy-site relative h-full overflow-y-auto overflow-x-hidden">
+      <div className="relative min-h-full">
         <SiteNav />
         {children}
         <SiteFooter />
@@ -24,9 +25,9 @@ export function NotebookShell({ children }: { children: ReactNode }) {
 
 export function Wordmark() {
   return (
-    <a href={href.landing()} className="flex items-baseline gap-2 text-fg">
-      <span className="text-[17px] font-semibold tracking-tight">האקדמיה של אורי</span>
-      <span className="ink hidden text-[13px] sm:inline">מחברת לימוד</span>
+    <a href={href.landing()} className="flex items-center gap-3 text-fg">
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-ice/25 bg-ice/10 text-ice"><Code2 className="h-5 w-5" /></span>
+      <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight sm:text-[17px]">האקדמיה של אורי</span>
     </a>
   );
 }
@@ -34,34 +35,36 @@ export function Wordmark() {
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-night/95">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 ps-10 pe-5 md:ps-24 md:pe-8">
+    <header className="sticky top-0 z-40 border-b border-line bg-night">
+      <nav className="mx-auto flex h-20 max-w-[1680px] items-center justify-between gap-4 px-5 md:px-8">
         <Wordmark />
-        <div className="hidden items-center gap-7 md:flex">
+        <div className="hidden items-center gap-5 md:flex lg:gap-7">
           {LINKS.map((l) => (
-            <a key={l.label} href={l.to} className="text-[14.5px] text-muted transition-colors hover:text-fg">
+            <a key={l.label} href={l.to} className="whitespace-nowrap text-[14.5px] text-muted transition-colors hover:text-fg">
               {l.label}
             </a>
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <a href={href.home()} className="btn-ice hidden sm:inline-flex">
-            לפתוח את המחברת
-          </a>
+          <MotionToggle className="hidden sm:inline-flex" />
+          <div className="hidden lg:block">
+            <a href={href.home()} className="btn-ice">להמשיך ללמוד</a>
+          </div>
           <button
             onClick={() => setOpen((o) => !o)}
-            className="rounded-[2px] border border-line p-2 text-fg md:hidden"
+            className="rounded-lg border border-line p-2 text-fg md:hidden"
             aria-label="תפריט"
             aria-expanded={open}
+            aria-controls="mobile-menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </nav>
       {open && (
-        <div className="border-t border-line bg-night md:hidden">
-          {[...LINKS, { label: 'לפתוח את המחברת', to: href.home() }].map((l) => (
-            <a key={l.label} href={l.to} onClick={() => setOpen(false)} className="rule-b block ps-10 pe-5 py-3.5 text-[15.5px] text-muted hover:text-fg">
+        <div id="mobile-menu" className="border-t border-line bg-night md:hidden">
+          {[...LINKS, { label: 'להמשיך ללמוד', to: href.home() }].map((l) => (
+            <a key={l.label} href={l.to} onClick={() => setOpen(false)} className="rule-b block px-5 py-3.5 text-[15.5px] text-muted hover:text-fg">
               {l.label}
             </a>
           ))}
@@ -74,7 +77,7 @@ export function SiteNav() {
 export function SiteFooter() {
   return (
     <footer className="rule-t mt-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 ps-10 pe-5 py-10 text-[13.5px] text-faint sm:flex-row sm:items-center sm:justify-between md:ps-24 md:pe-8">
+      <div className="mx-auto flex max-w-[1680px] flex-col gap-3 px-5 py-10 text-[13.5px] text-faint sm:flex-row sm:items-center sm:justify-between md:px-8">
         <span>האקדמיה של אורי · נבנתה כדי ללמוד, לתרגל ולהגיע מוכן.</span>
         <span>ההתקדמות נשמרת רק בדפדפן הזה.</span>
       </div>
@@ -84,7 +87,6 @@ export function SiteFooter() {
 
 export type BoxState = 'empty' | 'ticked' | 'starred';
 
-/** The notebook's three-state box: not started, completed, or completed with a perfect quiz. */
 export function StateBox({ state, className = '', decorative = false }: { state: BoxState; className?: string; decorative?: boolean }) {
   const label = state === 'starred' ? 'הושלם, 100% במבחן' : state === 'ticked' ? 'הושלם' : 'עוד לא הושלם';
   return (
@@ -100,12 +102,11 @@ export function StateBox({ state, className = '', decorative = false }: { state:
   );
 }
 
-/** One ledger row: label, dotted leader, value. */
 export function LedgerRow({ label, value, hrefTo }: { label: string; value: ReactNode; hrefTo?: string }) {
   const body = (
     <>
       <span className="text-muted">{label}</span>
-      <span aria-hidden className="mx-3 h-px flex-1 translate-y-[-0.3em] border-b border-dotted border-line-strong" />
+      <span aria-hidden className="mx-3 flex-1" />
       <span className="tabular text-fg">{value}</span>
     </>
   );

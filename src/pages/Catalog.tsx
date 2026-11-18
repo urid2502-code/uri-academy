@@ -1,12 +1,18 @@
-import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Clock3, LockKeyhole, Search } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useState } from 'react';
-import { LedgerRow, NotebookShell } from '../components/notebook';
+import { LedgerRow, MarketingShell } from '../components/MarketingShell';
+import { CourseCard } from '../components/CourseCard';
+import { CourseHeader } from '../components/CourseHeader';
+import { courseVisual } from '../components/course-visuals';
+import { SlidingTabs } from '../components/Tabs';
 import { allLessons } from '../content';
 import { CATEGORIES, courses, type Course } from '../content/courses';
+import { EASE_OUT } from '../lib/motion';
 import { useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
 
-const container = 'mx-auto max-w-6xl ps-10 pe-5 md:ps-24 md:pe-8';
+const container = 'mx-auto max-w-[1680px] px-5 md:px-8';
 
 export function Catalog() {
   const { state } = useProgress();
@@ -25,27 +31,24 @@ export function Catalog() {
   }, [cat, q]);
 
   return (
-    <NotebookShell>
+    <MarketingShell>
       <main className={`${container} pb-24 pt-14 md:pt-20`}>
         <h1 className="display-thin text-[44px] text-fg md:text-[68px]">קטלוג הקורסים.</h1>
-        <p className="mt-5 max-w-xl text-[17px] leading-8 text-muted">
-          {courses.length} קורסים במחברת. {liveCount === 1 ? 'אחד פתוח ומלא' : `${liveCount} פתוחים`}, והשאר מתוכננים עם סילבוס ויתווספו בהדרגה.
+        <p className="mt-5 text-[17px] leading-8 text-muted">
+          {courses.length} קורסים במקום אחד. {liveCount === 1 ? 'אחד פתוח ומלא' : `${liveCount} פתוחים`}, והשאר מתוכננים עם סילבוס ויתווספו בהדרגה.
         </p>
 
-        <div className="mt-12 flex flex-col gap-6 border-b border-line-strong pb-4 md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-wrap gap-x-5 gap-y-2" role="group" aria-label="סינון לפי תחום">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCat(c)}
-                aria-pressed={cat === c}
-                className={`border-b-2 pb-1 text-[15px] transition-colors ${cat === c ? 'border-ice text-fg' : 'border-transparent text-faint hover:text-muted'}`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-          <label className="relative block w-full md:w-72">
+        <div className="mt-12 flex flex-col gap-6 border-b border-line-strong pb-0 md:flex-row md:items-end md:justify-between">
+          <SlidingTabs
+            mode="filter"
+            idBase="catalog"
+            ariaLabel="סינון לפי תחום"
+            className="catalog-filters"
+            value={cat}
+            onChange={(id) => setCat(id as (typeof CATEGORIES)[number])}
+            items={CATEGORIES.map((c) => ({ id: c, label: c }))}
+          />
+          <label className="relative mb-3 block w-full md:w-72">
             <span className="sr-only">חיפוש קורס</span>
             <Search className="pointer-events-none absolute start-0 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
             <input
@@ -57,90 +60,82 @@ export function Catalog() {
           </label>
         </div>
 
-        <ol>
-          {list.map((c) => {
-            const live = c.status === 'live';
-            const n = courses.indexOf(c) + 1;
-            return (
-              <li key={c.id}>
-                <a
-                  href={live ? href.home() : href.course(c.id)}
-                  className="group rule-b grid grid-cols-[2rem_minmax(0,1fr)] gap-x-4 gap-y-2 py-6 md:grid-cols-[3rem_minmax(0,1fr)_11rem]"
-                >
-                  <span className="tabular pt-1 text-[14px] text-faint">{n}</span>
-                  <span className="min-w-0">
-                    <span className={`block text-[19px] transition-colors group-hover:text-ice ${live ? 'font-medium text-fg' : 'text-fg/85'}`}>{c.title}</span>
-                    <span className="mt-1.5 block max-w-2xl text-[15px] leading-7 text-muted">{c.subtitle}</span>
-                    <span dir="ltr" className="mt-2 block truncate text-end text-[13px] text-faint">
-                      {c.tags.join(' · ')}
-                    </span>
-                  </span>
-                  <span className="col-start-2 text-[13.5px] leading-6 md:col-start-auto md:text-end">
-                    <span className={`block ${live ? 'text-ice' : 'text-faint'}`}>
-                      {live ? (done > 0 ? `פתוח · ${Math.round((done / allLessons.length) * 100)}% הושלם` : 'פתוח') : 'בקרוב'}
-                    </span>
-                    <span className="tabular block text-faint">
-                      {c.lessons} שיעורים · כ-{c.hours} שעות
-                    </span>
-                    <span className="block text-faint">{c.level}</span>
-                  </span>
-                </a>
-              </li>
-            );
-          })}
-        </ol>
+        <motion.div layout className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <AnimatePresence mode="popLayout" initial>
+            {list.map((course, index) => (
+              <motion.div
+                key={course.id}
+                layout
+                className="h-full [&>.course-card]:h-full"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.4, ease: EASE_OUT, delay: Math.min(index * 0.04, 0.32) }}
+              >
+                <CourseCard course={course} progress={course.status === 'live' ? Math.round(done / allLessons.length * 100) : 0} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
         {list.length === 0 && <p className="py-10 text-[15px] text-faint">לא נמצא קורס עבור &quot;{q}&quot;.</p>}
       </main>
-    </NotebookShell>
+    </MarketingShell>
   );
 }
 
 export function CourseSoon({ course }: { course: Course }) {
   const live = courses.find((c) => c.status === 'live')!;
   return (
-    <NotebookShell>
-      <main className={`${container} pb-24 pt-10 md:pt-14`}>
-        <a href={href.courses()} className="link-quiet inline-flex items-center gap-1.5 text-[14px]">
+    <MarketingShell>
+      <main className="course-page course-preview">
+        <a href={href.courses()} className="course-breadcrumb">
           <ArrowRight className="h-3.5 w-3.5" /> לכל הקורסים
         </a>
-        <h1 className="display-thin mt-8 max-w-3xl text-[40px] text-fg md:text-[60px]">{course.title}</h1>
-        <p className="mt-5 max-w-2xl text-[17px] leading-8 text-muted">{course.subtitle}</p>
-        <p className="ink mt-4 text-[16px]">הקורס הזה עוד בכתיבה.</p>
+        <CourseHeader
+          title={course.title}
+          description={course.subtitle}
+          image={(motion) => courseVisual(course, motion)}
+          meta={<><span><BookOpen className="h-4 w-4" />{course.lessons} שיעורים מתוכננים</span><span><Clock3 className="h-4 w-4" />כ-{course.hours} שעות</span><span>{course.level}</span></>}
+          actions={<span className="course-preview-status"><LockKeyhole className="h-3.5 w-3.5" />בקרוב — הקורס עוד בכתיבה</span>}
+        />
 
-        <div className="mt-14 grid gap-y-14 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-x-20">
+        <div className="course-detail-grid">
           <div className="min-w-0">
-            <h2 className="h2-note text-[28px] text-fg">על הקורס</h2>
-            <p className="mt-4 text-[16.5px] leading-8 text-muted">{course.description}</p>
-            <h2 className="h2-note mt-12 text-[28px] text-fg">תוכנית הלימודים</h2>
-            <ol className="mt-5 border-t border-line-strong">
+            <h2 className="text-[20px] font-semibold text-fg">על הקורס</h2>
+            <p className="mb-9 mt-3 text-[16px] leading-8 text-muted">{course.description}</p>
+            <h2 className="text-[20px] font-semibold text-fg">תוכנית הלימודים המתוכננת</h2>
+            <ol className="preview-syllabus mt-5 border-t border-line">
               {course.syllabus.map((s, i) => (
-                <li key={s} className="rule-b grid grid-cols-[2.5rem_minmax(0,1fr)] items-baseline py-3.5">
-                  <span className="tabular text-[14px] text-faint">{i + 1}</span>
-                  <span className="text-[16px] text-fg">{s}</span>
+                <li key={s}>
+                  <span className="curriculum-number">{i + 1}</span>
+                  <span className="min-w-0 flex-1 text-[15px] leading-7 text-fg">{s}</span>
+                  <LockKeyhole className="h-3.5 w-3.5 shrink-0 text-faint" aria-label="עדיין לא זמין" />
                 </li>
               ))}
             </ol>
           </div>
-          <aside className="min-w-0">
-            <div className="border-t border-line-strong">
+          <aside className="course-context">
+            <section>
+              <h2>פרטי הקורס</h2>
               <LedgerRow label="שיעורים מתוכננים" value={course.lessons} />
               <LedgerRow label="היקף משוער" value={`כ-${course.hours} שעות`} />
               <LedgerRow label="רמה" value={course.level} />
               <LedgerRow label="תחום" value={course.category} />
-            </div>
-            <p dir="ltr" className="mt-5 text-end text-[13.5px] text-faint">
+            <p dir="ltr" className="mt-5 text-end text-[13px] leading-7 text-faint">
               {course.tags.join(' · ')}
             </p>
-            <div className="mt-10 border border-line-strong bg-night p-6">
-              <p className="text-[16px] font-medium text-fg">בינתיים: {live.title}</p>
+            </section>
+            <section>
+              <h2>בינתיים, אפשר להתחיל כאן</h2>
+              <a className="mt-3 block text-[16px] font-semibold text-fg hover:text-brand" href={href.home()}>{live.title}</a>
               <p className="mt-2 text-[15px] leading-7 text-muted">המסלול הפתוח נותן את הבסיס לכל שאר הקורסים. כדאי להתחיל בו.</p>
               <a href={href.home()} className="btn-ice mt-5">
                 למסלול Full Stack <ArrowLeft className="h-4 w-4" />
               </a>
-            </div>
+            </section>
           </aside>
         </div>
       </main>
-    </NotebookShell>
+    </MarketingShell>
   );
 }

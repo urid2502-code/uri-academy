@@ -1,15 +1,43 @@
 import { CheckCircle2, RotateCcw, Trophy, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { motion } from 'motion/react';
 import { useProgress } from '../lib/progress-context';
+import { EASE_OUT } from '../lib/motion';
 import type { QuizQuestion } from '../types';
 import { Inline } from './Markdown';
 
 const LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו'];
 
+function ScoreRing({ pct }: { pct: number }) {
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  return (
+    <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90 shrink-0" aria-hidden>
+      <circle cx="26" cy="26" r={radius} fill="none" stroke="var(--line)" strokeWidth="4" />
+      <motion.circle
+        cx="26"
+        cy="26"
+        r={radius}
+        fill="none"
+        stroke={pct >= 70 ? 'var(--brand)' : 'oklch(78% 0.15 75)'}
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        initial={{ strokeDashoffset: circumference }}
+        animate={{ strokeDashoffset: circumference * (1 - pct / 100) }}
+        transition={{ duration: 0.9, ease: EASE_OUT, delay: 0.1 }}
+      />
+    </svg>
+  );
+}
+
 export function Quiz({ lessonId, questions }: { lessonId: string; questions: QuizQuestion[] }) {
-  const { state, recordQuiz } = useProgress();
-  const [answers, setAnswers] = useState<(number | null)[]>(() => questions.map(() => null));
-  const [submitted, setSubmitted] = useState(false);
+  const { state, recordQuiz, setQuizDraft } = useProgress();
+  const signature = JSON.stringify(questions);
+  const saved = state.quizDrafts[lessonId];
+  const draft = saved?.signature === signature ? saved : {
+    signature, answers: questions.map(() => null), submitted: false,
+  };
+  const { answers, submitted } = draft;
   const prior = state.quiz[lessonId];
 
   const score = answers.reduce<number>((acc, a, i) => acc + (a === questions[i].answer ? 1 : 0), 0);
@@ -17,13 +45,12 @@ export function Quiz({ lessonId, questions }: { lessonId: string; questions: Qui
   const pct = Math.round((score / questions.length) * 100);
 
   const submit = () => {
-    setSubmitted(true);
+    setQuizDraft(lessonId, { ...draft, submitted: true });
     recordQuiz(lessonId, score, questions.length);
   };
 
   const retry = () => {
-    setAnswers(questions.map(() => null));
-    setSubmitted(false);
+    setQuizDraft(lessonId, { signature, answers: questions.map(() => null), submitted: false });
   };
 
   return (
@@ -57,10 +84,12 @@ export function Quiz({ lessonId, questions }: { lessonId: string; questions: Qui
                 if (submitted && isChosen && !isCorrect) cls = 'border-rose-500 bg-rose-500/10';
                 if (submitted && !isChosen && !isCorrect) cls = 'border-line opacity-55';
                 return (
-                  <button
+                  <motion.button
                     key={oi}
                     disabled={submitted}
-                    onClick={() => setAnswers((a) => a.map((v, i) => (i === qi ? oi : v)))}
+                    whileTap={{ scale: 0.985 }}
+                    onClick={() => setQuizDraft(lessonId, { ...draft, answers: answers.map((v, i) => (i === qi ? oi : v)) })}
+                    aria-pressed={isChosen}
                     className={`flex items-start gap-3 rounded-xl border-2 px-4 py-3 text-start text-[15px] leading-6 text-muted transition ${cls}`}
                   >
                     <span
@@ -75,7 +104,7 @@ export function Quiz({ lessonId, questions }: { lessonId: string; questions: Qui
                     </span>
                     {submitted && isCorrect && <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />}
                     {submitted && isChosen && !isCorrect && <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -104,13 +133,19 @@ export function Quiz({ lessonId, questions }: { lessonId: string; questions: Qui
           </>
         ) : (
           <>
-            <div
-              className={`rounded-xl px-4 py-2.5 text-[15px] font-semibold ${
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: EASE_OUT }}
+              className={`flex items-center gap-4 rounded-xl px-4 py-3 text-[15px] font-semibold ${
                 pct >= 70 ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' : 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
               }`}
             >
-              {score}/{questions.length} נכונות ({pct}%) — {pct >= 70 ? 'כל הכבוד! השיעור סומן כהושלם 🎉' : 'צריך 70% כדי להשלים את השיעור. נסה שוב!'}
-            </div>
+              <ScoreRing pct={pct} />
+              <span>
+                {score}/{questions.length} נכונות ({pct}%) — {pct >= 70 ? 'כל הכבוד! השיעור סומן כהושלם' : 'צריך 70% כדי להשלים את השיעור. נסה שוב!'}
+              </span>
+            </motion.div>
             <button onClick={retry} className="flex items-center gap-1.5 rounded-xl border border-line px-4 py-2.5 text-[14px] text-muted hover:border-brand/50">
               <RotateCcw className="h-4 w-4" /> נסה שוב
             </button>

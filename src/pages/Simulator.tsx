@@ -457,13 +457,13 @@ export function Simulator() {
         : 'text-emerald-600 dark:text-emerald-300';
 
   return (
-    <div className="mx-auto max-w-[1320px] px-5 pb-24 pt-8 lg:px-10">
+    <div className="mx-auto max-w-[1680px] px-5 pb-24 pt-8 lg:px-10">
       <header className="mb-6">
         <div className="flex items-center gap-2 text-[13px] font-bold text-teal-600 dark:text-teal-300">
           <Activity className="h-4 w-4" /> מעבדה אינטראקטיבית
         </div>
         <h1 className="mt-2 text-[32px] font-bold tracking-tight text-fg">סימולטור: המסע של בקשה במערכת אמיתית</h1>
-        <p className="mt-2 max-w-3xl text-[16px] leading-7 text-muted">
+        <p className="mt-2 text-[16px] leading-7 text-muted">
           בחר תרחיש ולחץ "שלח בקשה". תראה איך Request עובר בין כל חלקי המערכת – Browser, Server, Queue, AI, Database ו-Dashboard – עם הסבר לכל שלב. אחר
           כך הפעל תקלות ותראה איך מערכת שבנויה נכון ממשיכה לעבוד גם כשמשהו נשבר.
         </p>

@@ -7,6 +7,8 @@ export type Route =
   | { name: 'home' }
   | { name: 'module'; moduleId: string }
   | { name: 'lesson'; moduleId: string; lessonId: string }
+  | { name: 'focus'; moduleId: string; lessonId: string }
+  | { name: 'community' }
   | { name: 'simulator' }
   | { name: 'comparisons'; id?: string }
   | { name: 'interview'; id?: string }
@@ -26,6 +28,11 @@ export function parseHash(hash: string): Route {
       if (parts[1] && parts[2]) return { name: 'lesson', moduleId: parts[1], lessonId: parts[2] };
       if (parts[1]) return { name: 'module', moduleId: parts[1] };
       return { name: 'home' };
+    case 'focus':
+      if (parts[1] && parts[2]) return { name: 'focus', moduleId: parts[1], lessonId: parts[2] };
+      return { name: 'home' };
+    case 'community':
+      return { name: 'community' };
     case 'simulator':
       return { name: 'simulator' };
     case 'comparisons':
@@ -47,6 +54,8 @@ export const href = {
   home: () => '#/course/fullstack',
   module: (m: string) => `#/m/${m}`,
   lesson: (m: string, l: string) => `#/m/${m}/${l}`,
+  focus: (m: string, l: string) => `#/focus/${m}/${l}`,
+  community: () => '#/community',
   simulator: () => '#/simulator',
   comparisons: (id?: string) => (id ? `#/comparisons/${id}` : '#/comparisons'),
   interview: (id?: string) => (id ? `#/interview/${id}` : '#/interview'),

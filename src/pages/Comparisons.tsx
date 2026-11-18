@@ -50,13 +50,13 @@ export function Comparisons({ selectedId }: { selectedId?: string }) {
   );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-5 pb-24 pt-8 lg:px-10">
+    <div className="mx-auto max-w-[1680px] px-5 pb-24 pt-8 lg:px-10">
       <header className="mb-6">
         <div className="flex items-center gap-2 text-[13px] font-bold text-amber-600 dark:text-amber-300">
           <GitCompareArrows className="h-4 w-4" /> קוד מתחיל מול קוד מקצוען
         </div>
         <h1 className="mt-2 text-[32px] font-bold tracking-tight text-fg">אותה משימה, שתי גרסאות</h1>
-        <p className="mt-2 max-w-3xl text-[16px] leading-7 text-muted">
+        <p className="mt-2 text-[16px] leading-7 text-muted">
           הגרסה של המתחיל "עובדת" בהדגמה – אבל נשברת בעולם האמיתי: כשיש שגיאות, משתמשים רבים, רשת לא יציבה או מישהו זדוני. נסה קודם למצוא בעצמך מה הבעיה
           בגרסת המתחיל, ורק אז תסתכל על ההסבר.
         </p>

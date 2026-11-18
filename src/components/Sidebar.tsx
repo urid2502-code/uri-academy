@@ -1,19 +1,20 @@
-import { BookA, CheckCircle2, ChevronLeft, Circle, GitCompareArrows, GraduationCap, Home, LayoutGrid, Moon, Network, Search, Sun, Swords, X } from 'lucide-react';
+import { BookA, CheckCircle2, ChevronLeft, Circle, Code2, GitCompareArrows, Home, LayoutGrid, MessagesSquare, Moon, Network, PanelRightClose, Search, Sun, Swords, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { allLessons, lessonKey, modules, search, STAGES } from '../content';
 import { useProgress } from '../lib/progress-context';
 import { href, navigate, useTheme, type Route } from '../lib/router';
 import type { Stage } from '../types';
-import { toneText } from './tones';
 import { ModuleIcon, ProgressBar } from './ui';
 
 interface Props {
   route: Route;
   searchExtra: { title: string; subtitle: string; href: string; body: string }[];
   onNavigate?: () => void;
+  /** Provided on desktop, where the menu can be hidden entirely. */
+  onCollapse?: () => void;
 }
 
-export function Sidebar({ route, searchExtra, onNavigate }: Props) {
+export function Sidebar({ route, searchExtra, onNavigate, onCollapse }: Props) {
   const { state, isComplete } = useProgress();
   const [theme, toggleTheme] = useTheme();
   const [query, setQuery] = useState('');
@@ -50,31 +51,43 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
   };
 
   const navItem = (active: boolean) =>
-    `flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[14px] transition ${
+    `flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] transition ${
       active ? 'bg-brand/10 font-semibold text-brand' : 'text-muted hover:bg-surface-2 hover:text-fg'
     }`;
 
   return (
-    <aside className="flex h-full w-[310px] shrink-0 flex-col border-e border-line bg-surface">
+    <aside className="learning-sidebar flex h-full w-[272px] max-w-[85vw] shrink-0 flex-col border-e border-line bg-surface">
       <div className="px-5 pb-4 pt-5">
         <div className="flex items-center justify-between">
           <a href={href.landing()} onClick={() => onNavigate?.()} className="flex items-center gap-3">
-            <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-soft">
-              <GraduationCap className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand/25 bg-brand/10 text-brand">
+              <Code2 className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[16px] font-bold leading-5 text-fg">האקדמיה של אורי</div>
-              <div className="text-[12px] text-faint">מסלול Full Stack מהיסוד</div>
+              <div className="text-[14px] font-semibold leading-5 text-fg">האקדמיה של אורי</div>
+              <div className="text-[12px] text-faint">מסלול Full Stack</div>
             </div>
           </a>
-          <button
-            onClick={toggleTheme}
-            className="rounded-xl border border-line p-2 text-muted transition hover:bg-surface-2 hover:text-fg"
-            aria-label={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'}
-            title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'}
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+          <div className="flex items-center">
+            <button
+              onClick={toggleTheme}
+              className="rounded-lg p-2 text-muted transition hover:bg-surface-2 hover:text-fg"
+              aria-label={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'}
+              title={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'}
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            {onCollapse && (
+              <button
+                onClick={onCollapse}
+                className="rounded-lg p-2 text-muted transition hover:bg-surface-2 hover:text-fg"
+                aria-label="הסתר את התפריט"
+                title="הסתר את התפריט (Ctrl+B)"
+              >
+                <PanelRightClose className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="relative mt-4">
@@ -93,7 +106,7 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
               if (e.key === 'Escape') setQuery('');
             }}
             placeholder="חיפוש שיעור או מונח…"
-            className="w-full rounded-xl border border-line bg-surface-2/60 py-2.5 pe-14 ps-9 text-[14px] text-fg placeholder:text-faint focus:border-brand focus:outline-none"
+            className="w-full rounded-lg border border-line bg-bg py-2.5 pe-14 ps-9 text-[13px] text-fg placeholder:text-faint focus:border-brand focus:outline-none"
           />
           {query ? (
             <button onClick={() => setQuery('')} className="absolute end-3 top-1/2 -translate-y-1/2 text-faint hover:text-fg" aria-label="נקה חיפוש">
@@ -122,14 +135,14 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
           )}
         </div>
 
-        <div className="mt-4 rounded-2xl bg-surface-2/70 px-4 py-3">
+        <div className="mt-5 border-b border-line pb-5">
           <div className="mb-2 flex items-center justify-between text-[12px]">
             <span className="font-semibold text-muted">ההתקדמות שלך</span>
             <span className="font-bold text-brand">
               {done}/{total} · {pct}%
             </span>
           </div>
-          <ProgressBar value={pct} tone="brand-gradient" />
+          <ProgressBar value={pct} />
         </div>
       </div>
 
@@ -154,14 +167,15 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
                   return (
                     <div key={m.id}>
                       <button
+                        aria-expanded={isOpen}
                         onClick={() => {
                           setExpanded(isOpen ? null : m.id);
                           if (!isOpen) go(href.module(m.id));
                         }}
-                        className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start transition ${isActive ? 'bg-surface-2' : 'hover:bg-surface-2/70'}`}
+                        className={`flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-start transition ${isActive ? 'bg-brand/8' : 'hover:bg-surface-2/70'}`}
                       >
-                        <ModuleIcon icon={m.icon} className={`h-4 w-4 shrink-0 ${toneText[m.tone]}`} />
-                        <span className="min-w-0 flex-1 truncate text-[14px] text-fg">
+                        <ModuleIcon icon={m.icon} className={`h-4 w-4 shrink-0 ${isActive ? 'text-brand' : 'text-faint'}`} />
+                        <span className="min-w-0 flex-1 text-[13px] leading-6 text-fg">
                           <span className="me-1.5 text-[12px] font-bold text-faint">{m.number}.</span>
                           {m.short}
                         </span>
@@ -171,7 +185,7 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
                         <ChevronLeft className={`h-3.5 w-3.5 shrink-0 text-faint transition ${isOpen ? '-rotate-90' : ''}`} />
                       </button>
                       {isOpen && (
-                        <div className="ms-[22px] mt-0.5 space-y-0.5 border-s-2 border-line pb-1.5 ps-2.5">
+                        <div className="ms-[22px] mt-0.5 space-y-0.5 border-s border-line pb-1.5 ps-2.5">
                           {m.lessons.map((l) => {
                             const active = route.name === 'lesson' && route.moduleId === m.id && route.lessonId === l.id;
                             const complete = isComplete(lessonKey(m, l));
@@ -179,6 +193,7 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
                               <a
                                 key={l.id}
                                 href={href.lesson(m.id, l.id)}
+                                aria-current={active ? 'page' : undefined}
                                 onClick={() => onNavigate?.()}
                                 className={`flex items-start gap-2 rounded-lg px-2 py-1.5 text-[13px] leading-5 transition ${
                                   active ? 'bg-brand/10 font-semibold text-brand' : 'text-muted hover:bg-surface-2 hover:text-fg'
@@ -215,6 +230,9 @@ export function Sidebar({ route, searchExtra, onNavigate }: Props) {
           </a>
           <a href={href.interview()} onClick={() => onNavigate?.()} className={navItem(route.name === 'interview')}>
             <Swords className="h-4 w-4 text-rose-500" /> הכנה לראיון עבודה
+          </a>
+          <a href={href.community()} onClick={() => onNavigate?.()} className={navItem(route.name === 'community')}>
+            <MessagesSquare className="h-4 w-4 text-brand" /> Thought Streams
           </a>
         </div>
       </nav>

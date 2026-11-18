@@ -15,18 +15,27 @@ export interface ProgressState {
   quiz: Record<string, QuizResult>;
   notes: Record<string, string>;
   checklists: Record<string, string[]>;
+  lessonSteps: Record<string, { index: number; furthest: number }>;
+  quizDrafts: Record<string, QuizDraft>;
   lastVisited?: { moduleId: string; lessonId: string };
 }
 
-export const empty: ProgressState = { completed: [], quiz: {}, notes: {}, checklists: {} };
+export interface QuizDraft {
+  signature: string;
+  answers: (number | null)[];
+  submitted: boolean;
+}
+
+export const empty: ProgressState = { completed: [], quiz: {}, notes: {}, checklists: {}, lessonSteps: {}, quizDrafts: {} };
 
 export function load(): ProgressState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return empty;
     const parsed = JSON.parse(raw) as Partial<ProgressState>;
-    return { ...empty, ...parsed };
-  } catch {
+    return { ...empty, ...parsed, lessonSteps: parsed.lessonSteps ?? {}, quizDrafts: parsed.quizDrafts ?? {} };
+  } catch (error) {
+    console.error('Unable to load academy progress', error);
     return empty;
   }
 }
@@ -36,6 +45,8 @@ export interface ProgressApi {
   isComplete: (lessonId: string) => boolean;
   setComplete: (lessonId: string, done: boolean) => void;
   recordQuiz: (lessonId: string, score: number, total: number) => void;
+  setLessonStep: (lessonId: string, index: number) => void;
+  setQuizDraft: (lessonId: string, draft: QuizDraft) => void;
   setNote: (key: string, value: string) => void;
   toggleChecklist: (key: string, item: string) => void;
   visit: (moduleId: string, lessonId: string) => void;

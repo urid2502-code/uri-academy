@@ -1,16 +1,21 @@
 ﻿import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { empty, load, ProgressContext, STORAGE_KEY, type ProgressApi, type ProgressState, type QuizResult } from './progress-context';
+import { empty, load, ProgressContext, STORAGE_KEY, type ProgressApi, type ProgressState, type QuizResult, type QuizDraft } from './progress-context';
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ProgressState>(load);
+  const [storageError, setStorageError] = useState(false);
+  const [saveAttempt, setSaveAttempt] = useState(0);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      /* storage full or disabled: progress stays in-memory */
+      // oxlint-disable-next-line -- Reflect the external storage write result; this only changes on failure or recovery.
+      setStorageError(false);
+    } catch (error) {
+      console.error('Unable to save academy progress', error);
+      setStorageError(true);
     }
-  }, [state]);
+  }, [state, saveAttempt]);
 
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
@@ -48,6 +53,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, notes: { ...s.notes, [key]: value } }));
   }, []);
 
+  const setLessonStep = useCallback((lessonId: string, index: number) => {
+    setState((s) => ({
+      ...s,
+      lessonSteps: {
+        ...s.lessonSteps,
+        [lessonId]: { index, furthest: Math.max(s.lessonSteps[lessonId]?.furthest ?? 0, index) },
+      },
+    }));
+  }, []);
+
+  const setQuizDraft = useCallback((lessonId: string, draft: QuizDraft) => {
+    setState((s) => ({ ...s, quizDrafts: { ...s.quizDrafts, [lessonId]: draft } }));
+  }, []);
+
   const toggleChecklist = useCallback((key: string, item: string) => {
     setState((s) => {
       const cur = s.checklists[key] ?? [];
@@ -58,7 +77,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const visit = useCallback((moduleId: string, lessonId: string) => {
     setState((s) =>
-      s.lastVisited?.lessonId === lessonId ? s : { ...s, lastVisited: { moduleId, lessonId } },
+      s.lastVisited?.moduleId === moduleId && s.lastVisited.lessonId === lessonId ? s : { ...s, lastVisited: { moduleId, lessonId } },
     );
   }, []);
 
@@ -70,14 +89,22 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       isComplete: (id) => state.completed.includes(id),
       setComplete,
       recordQuiz,
+      setLessonStep,
+      setQuizDraft,
       setNote,
       toggleChecklist,
       visit,
       reset,
     }),
-    [state, setComplete, recordQuiz, setNote, toggleChecklist, visit, reset],
+    [state, setComplete, recordQuiz, setLessonStep, setQuizDraft, setNote, toggleChecklist, visit, reset],
   );
 
-  return <ProgressContext.Provider value={api}>{children}</ProgressContext.Provider>;
+  return <ProgressContext.Provider value={api}>
+    {children}
+    {storageError && <div role="alert" className="fixed inset-x-4 bottom-4 z-50 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-500 bg-surface p-4 text-[14px] text-fg shadow-lg">
+      <p>לא ניתן לשמור את ההתקדמות בדפדפן. היא זמינה כרגע רק כל עוד הדף פתוח. אפשר אחסון מקומי או פנה מקום ונסה שוב.</p>
+      <button className="underline underline-offset-4" onClick={() => setSaveAttempt((value) => value + 1)}>נסה לשמור שוב</button>
+    </div>}
+  </ProgressContext.Provider>;
 }
 

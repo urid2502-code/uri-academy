@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-18T12:03:28Z",
+  "title": "Design System: האקדמיה של אורי",
+  "extensions": {
+    "colorMeta": {
+      "night": { "role": "neutral", "displayName": "Polar Night", "tonalRamp": ["oklch(15% 0.012 258)", "oklch(26% 0.022 258)", "oklch(38% 0.022 258)", "oklch(49% 0.022 258)", "oklch(61% 0.022 258)", "oklch(72% 0.022 258)", "oklch(84% 0.014 258)", "oklch(95% 0.005 258)"] },
+      "bg": { "role": "neutral", "displayName": "App Ground", "tonalRamp": ["oklch(15% 0.012 256)", "oklch(26% 0.026 256)", "oklch(38% 0.026 256)", "oklch(49% 0.026 256)", "oklch(61% 0.026 256)", "oklch(72% 0.026 256)", "oklch(84% 0.014 256)", "oklch(95% 0.005 256)"] },
+      "surface": { "role": "neutral", "displayName": "App Surface", "tonalRamp": ["oklch(15% 0.012 256)", "oklch(26% 0.03 256)", "oklch(38% 0.03 256)", "oklch(49% 0.03 256)", "oklch(61% 0.03 256)", "oklch(72% 0.03 256)", "oklch(84% 0.014 256)", "oklch(95% 0.005 256)"] },
+      "surface-2": { "role": "neutral", "displayName": "Raised Surface", "tonalRamp": ["oklch(15% 0.012 255)", "oklch(26% 0.034 255)", "oklch(38% 0.034 255)", "oklch(49% 0.034 255)", "oklch(61% 0.034 255)", "oklch(72% 0.034 255)", "oklch(84% 0.014 255)", "oklch(95% 0.005 255)"] },
+      "line": { "role": "neutral", "displayName": "Fine Outline", "tonalRamp": ["oklch(15% 0.012 254)", "oklch(26% 0.04 254)", "oklch(38% 0.04 254)", "oklch(49% 0.04 254)", "oklch(61% 0.04 254)", "oklch(72% 0.04 254)", "oklch(84% 0.014 254)", "oklch(95% 0.005 254)"] },
+      "line-strong": { "role": "neutral", "displayName": "Strong Outline", "tonalRamp": ["oklch(15% 0.012 252)", "oklch(26% 0.05 252)", "oklch(38% 0.05 252)", "oklch(49% 0.05 252)", "oklch(61% 0.05 252)", "oklch(72% 0.05 252)", "oklch(84% 0.018 252)", "oklch(95% 0.005 252)"] },
+      "fg": { "role": "neutral", "displayName": "Snow Text", "tonalRamp": ["oklch(15% 0.006 236)", "oklch(26% 0.012 236)", "oklch(38% 0.012 236)", "oklch(49% 0.012 236)", "oklch(61% 0.012 236)", "oklch(72% 0.012 236)", "oklch(84% 0.009 236)", "oklch(95% 0.004 236)"] },
+      "muted": { "role": "neutral", "displayName": "Cool Muted", "tonalRamp": ["oklch(15% 0.01 238)", "oklch(26% 0.024 238)", "oklch(38% 0.024 238)", "oklch(49% 0.024 238)", "oklch(61% 0.024 238)", "oklch(72% 0.024 238)", "oklch(84% 0.014 238)", "oklch(95% 0.005 238)"] },
+      "faint": { "role": "neutral", "displayName": "Slate Faint", "tonalRamp": ["oklch(15% 0.012 244)", "oklch(26% 0.03 244)", "oklch(38% 0.03 244)", "oklch(49% 0.03 244)", "oklch(61% 0.03 244)", "oklch(72% 0.03 244)", "oklch(84% 0.014 244)", "oklch(95% 0.005 244)"] },
+      "ice": { "role": "primary", "displayName": "Glacier Ice", "tonalRamp": ["oklch(15% 0.02 226)", "oklch(26% 0.045 226)", "oklch(38% 0.065 226)", "oklch(49% 0.085 226)", "oklch(61% 0.095 226)", "oklch(72% 0.095 226)", "oklch(84% 0.075 226)", "oklch(95% 0.02 226)"] },
+      "brand-fg": { "role": "neutral", "displayName": "Deep Action Ink", "tonalRamp": ["oklch(15% 0.012 256)", "oklch(26% 0.04 256)", "oklch(38% 0.04 256)", "oklch(49% 0.04 256)", "oklch(61% 0.04 256)", "oklch(72% 0.04 256)", "oklch(84% 0.014 256)", "oklch(95% 0.005 256)"] },
+      "fjord": { "role": "secondary", "displayName": "Fjord Blue", "tonalRamp": ["oklch(15% 0.02 252)", "oklch(26% 0.06 252)", "oklch(38% 0.1 252)", "oklch(49% 0.13 252)", "oklch(61% 0.13 252)", "oklch(72% 0.1 252)", "oklch(84% 0.055 252)", "oklch(95% 0.015 252)"] },
+      "hero-ground": { "role": "neutral", "displayName": "Hero Charcoal", "tonalRamp": ["oklch(15% 0.012 240)", "oklch(26% 0.025 240)", "oklch(38% 0.025 240)", "oklch(49% 0.025 240)", "oklch(61% 0.025 240)", "oklch(72% 0.025 240)", "oklch(84% 0.014 240)", "oklch(95% 0.005 240)"] },
+      "gallery-slate": { "role": "neutral", "displayName": "Gallery Slate", "tonalRamp": ["oklch(15% 0.012 240)", "oklch(26% 0.025 240)", "oklch(38% 0.025 240)", "oklch(49% 0.025 240)", "oklch(61% 0.025 240)", "oklch(72% 0.025 240)", "oklch(84% 0.014 240)", "oklch(95% 0.005 240)"] },
+      "gallery-selected": { "role": "neutral", "displayName": "Selected Slate", "tonalRamp": ["oklch(15% 0.012 235)", "oklch(26% 0.035 235)", "oklch(38% 0.035 235)", "oklch(49% 0.035 235)", "oklch(61% 0.035 235)", "oklch(72% 0.035 235)", "oklch(84% 0.018 235)", "oklch(95% 0.005 235)"] },
+      "gallery-outline": { "role": "primary", "displayName": "Ice Outline", "tonalRamp": ["oklch(15% 0.02 215)", "oklch(26% 0.04 215)", "oklch(38% 0.06 215)", "oklch(49% 0.08 215)", "oklch(61% 0.09 215)", "oklch(72% 0.09 215)", "oklch(84% 0.07 215)", "oklch(95% 0.018 215)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Hero Display", "purpose": "Balanced, centered hero heading; Heebo is self-hosted." },
+      "headline": { "displayName": "Section Headline", "purpose": "Shared 28px headline role; learning sections use denser 20–23px headings." },
+      "title": { "displayName": "Gallery Title", "purpose": "Selected and preview course names; 23px up to 639px." },
+      "body": { "displayName": "Card Body", "purpose": "Catalog course descriptions." },
+      "label": { "displayName": "Action Label", "purpose": "Compact primary buttons." },
+      "course-title": { "displayName": "Course Title", "purpose": "Course/module and lesson titles at 36px, reduced to 28px on phones." },
+      "reading-body": { "displayName": "Lesson Body", "purpose": "Hebrew lesson prose at 16px/32px within a 72ch maximum article." }
+    },
+    "shadows": [
+      { "name": "gallery-selected", "value": "0 18px 40px -24px #70cfe57a", "purpose": "Diffuse blue lift under the active gallery card." },
+      { "name": "app-soft-light", "value": "0 1px 2px oklch(20% 0.04 255 / 0.05), 0 10px 26px -14px oklch(20% 0.04 255 / 0.18)", "purpose": "Existing shared app soft-surface utility in light mode." },
+      { "name": "app-soft-dark", "value": "0 1px 2px oklch(4% 0.01 256 / 0.4), 0 12px 30px -14px oklch(4% 0.01 256 / 0.7)", "purpose": "Existing shared app soft-surface utility in dark mode." }
+    ],
+    "motion": [
+      { "name": "action", "value": "160ms ease-out", "purpose": "Primary/secondary button feedback; primary hover rises 2px." },
+      { "name": "catalog-card", "value": "200ms ease-out", "purpose": "Border, background and 4px hover lift." },
+      { "name": "gallery-emphasis", "value": "350ms ease-out", "purpose": "Card scale, opacity, border and background selection." },
+      { "name": "gallery-pagination", "value": "250ms ease-out", "purpose": "Position indicator width and color." },
+      { "name": "hero-artwork", "value": "650ms ease-out", "purpose": "Selected course backdrop crossfade to opacity 0.36." },
+      { "name": "gallery-centering", "value": "spring(stiffness: 260, damping: 32)", "purpose": "Motion spring configuration, not a CSS timing function." },
+      { "name": "reduced-motion", "value": "0ms", "purpose": "Instant artwork/centering; marketing CSS animations and transitions disabled under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "phone-gallery-max", "value": "639px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "learning-context-stack", "value": "1200px" },
+      { "name": "lesson-toc", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Learning Header",
+      "kind": "card",
+      "refersTo": "learning-header",
+      "description": "Shared course/module/upcoming header. Original local SVG cover is 156px high, 116px on phones; the body uses theme-aware opaque surfaces.",
+      "html": "<header class=\"ds-learning-header\" dir=\"rtl\"><h1>Full Stack מהיסוד ועד Senior</h1><p>מסלול מעשי בעברית, מהבקשה הראשונה ועד מערכות Production.</p></header>",
+      "css": ".ds-learning-header{border:1px solid var(--line);border-radius:12px;padding:24px 28px;background:var(--surface);font-family:var(--font-sans)}.ds-learning-header h1{margin:0;color:var(--fg);font-size:36px;font-weight:650;line-height:1.35;letter-spacing:-.025em}.ds-learning-header p{margin:10px 0 0;max-width:70ch;color:var(--muted);font-size:15px;line-height:1.85}@media(max-width:639px){.ds-learning-header{padding:20px}.ds-learning-header h1{font-size:28px}}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Compact filled action; the large variant uses 16px type and 0.85rem 1.4rem padding.",
+      "html": "<button class=\"ds-primary\" dir=\"rtl\">להמשיך ללמוד</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;gap:.5rem;border:0;border-radius:7px;background:var(--ice);color:var(--brand-fg);font-family:var(--font-sans);font-weight:600;font-size:14.5px;padding:.55rem 1rem;cursor:pointer;transition:background-color 160ms ease-out,transform 160ms ease-out}.ds-primary:hover{background:oklch(91% .07 222);transform:translateY(-2px)}.ds-primary:focus-visible{outline:2px solid var(--ice);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}.ds-primary:hover{transform:none}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined alternative to the filled primary action.",
+      "html": "<button class=\"ds-secondary\" dir=\"rtl\">כל הקורסים</button>",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-strong);border-radius:7px;padding:.85rem 1.4rem;font-family:var(--font-sans);font-size:16px;font-weight:500;color:var(--fg);background:transparent;cursor:pointer;transition:border-color 160ms ease-out,background-color 160ms ease-out}.ds-secondary:hover{border-color:var(--ice);background:var(--surface-2)}.ds-secondary:focus-visible{outline:2px solid var(--ice);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}"
+    },
+    {
+      "name": "Catalog Search",
+      "kind": "input",
+      "refersTo": "search",
+      "description": "Bottom-bordered RTL search field; focus uses the source's ice underline.",
+      "html": "<label class=\"ds-search\" dir=\"rtl\"><span class=\"ds-search-label\">חיפוש קורס</span><svg class=\"ds-search-icon\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input class=\"ds-search-input\" placeholder=\"חיפוש קורס או טכנולוגיה\"/></label>",
+      "css": ".ds-search{position:relative;display:block;width:288px;color:var(--fg);font-family:var(--font-sans)}.ds-search-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.ds-search-icon{position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--faint)}.ds-search-input{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:8px 28px 8px 0;font:15px var(--font-sans);color:var(--fg)}.ds-search-input::placeholder{color:var(--faint)}.ds-search-input:focus{border-bottom-color:var(--ice);outline:none}"
+    },
+    {
+      "name": "Technology Tag",
+      "kind": "chip",
+      "refersTo": "technology-tag",
+      "description": "Non-interactive catalog technology label; not a filter button.",
+      "html": "<span class=\"ds-tag\" dir=\"ltr\">TypeScript</span>",
+      "css": ".ds-tag{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-family:var(--font-sans);font-size:12px;color:var(--muted)}"
+    },
+    {
+      "name": "Marketing Navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Solid dark header links; the shipped mobile menu replaces desktop links below 768px.",
+      "html": "<nav class=\"ds-nav\" dir=\"rtl\" aria-label=\"ניווט לדוגמה\"><a class=\"ds-nav-brand\" href=\"#/\">האקדמיה של אורי</a><a href=\"#/courses\">קורסים</a><a href=\"#/course/fullstack\">המסלול המלא</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:28px;height:80px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--night);font-family:var(--font-sans)}.ds-nav a{color:var(--muted);font-size:14.5px;text-decoration:none}.ds-nav .ds-nav-brand{color:var(--fg);font-size:17px;font-weight:600;margin-inline-end:auto}.ds-nav a:hover{color:var(--fg)}.ds-nav a:focus-visible{outline:2px solid var(--ice);outline-offset:3px}"
+    },
+    {
+      "name": "Catalog Course Card",
+      "kind": "card",
+      "refersTo": "course-card",
+      "description": "Opaque course container; compact preview shows metadata and title without external image dependencies.",
+      "html": "<a class=\"ds-course\" href=\"#/courses\" dir=\"rtl\"><span class=\"ds-course-status\">זמין ללמידה</span><h3>Full Stack מהיסוד ועד Senior</h3><p>מסלולי לימוד בעברית, מהיסודות ועד הקוד שבאמת עובד.</p></a>",
+      "css": ".ds-course{display:flex;flex-direction:column;max-width:320px;padding:26px;border:1px solid var(--line);border-radius:12px;background:oklch(14% .025 255);text-decoration:none;font-family:var(--font-sans);transition:border-color 200ms ease-out,transform 200ms ease-out,background-color 200ms ease-out}.ds-course-status{align-self:flex-start;border-radius:5px;background:oklch(25% .045 240);padding:3px 8px;color:var(--ice);font-size:13px}.ds-course h3{margin:24px 0 0;font-size:22px;font-weight:600;line-height:1.375;color:var(--fg)}.ds-course p{margin:12px 0 0;font-size:15px;line-height:28px;color:var(--muted)}.ds-course:hover{transform:translateY(-4px);border-color:var(--ice);background:oklch(19% .035 253)}.ds-course:hover h3{color:var(--ice)}.ds-course:focus-visible{outline:2px solid var(--ice);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-course{transition:none}.ds-course:hover{transform:none}}"
+    },
+    {
+      "name": "Selected Gallery Card",
+      "kind": "custom",
+      "refersTo": "gallery-card",
+      "description": "Selected translucent slate tab; inline circuit excerpt represents the original local course artwork.",
+      "html": "<div role=\"tablist\" aria-label=\"תצוגת כרטיס\"><button class=\"ds-gallery\" role=\"tab\" aria-selected=\"true\" dir=\"rtl\"><svg class=\"ds-gallery-art\" viewBox=\"0 0 1000 640\" aria-hidden=\"true\"><defs><radialGradient id=\"ds-ground\"><stop stop-color=\"#173d52\"/><stop offset=\"1\" stop-color=\"#07111b\"/></radialGradient></defs><rect width=\"1000\" height=\"640\" fill=\"url(#ds-ground)\"/><rect x=\"356\" y=\"215\" width=\"288\" height=\"192\" rx=\"26\" fill=\"#0b1c29\" stroke=\"#7ee0f1\" stroke-width=\"2\"/><rect x=\"376\" y=\"235\" width=\"248\" height=\"152\" rx=\"16\" fill=\"#102c3c\" stroke=\"#34718e\"/><path d=\"m457 285-28 27 28 27m86-54 28 27-28 27m-26-74-28 97\" fill=\"none\" stroke=\"#baf4ff\" stroke-width=\"9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span class=\"ds-gallery-body\"><span class=\"ds-gallery-status\">זמין ללמידה</span><span class=\"ds-gallery-title\">Full Stack מהיסוד ועד Senior</span><span class=\"ds-gallery-description\">Web, TypeScript, Node.js, React, PostgreSQL</span></span></button></div>",
+      "css": ".ds-gallery{display:flex;flex-direction:column;width:300px;overflow:hidden;border:1px solid #96e5f6;border-radius:14px;padding:10px;background:#253e4bd9;backdrop-filter:blur(12px);text-align:start;font-family:var(--font-sans);box-shadow:0 18px 40px -24px #70cfe57a;transition:border-color 350ms ease-out}.ds-gallery:hover{border-color:#a7e8f7}.ds-gallery:focus-visible{outline:2px solid var(--ice);outline-offset:3px}.ds-gallery-art{display:block;width:100%;aspect-ratio:1.85;border-radius:7px;background:#0c202c}.ds-gallery-body{display:flex;flex-direction:column;padding:15px 9px 10px}.ds-gallery-status{font-size:11px;color:#a7e8f7}.ds-gallery-title{margin-top:7px;min-height:60px;font-size:25px;font-weight:550;line-height:1.25;color:#f0f7fa}.ds-gallery-description{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:44px;margin-top:10px;font-size:13px;line-height:1.7;color:#c3d2db}@media(max-width:639px){.ds-gallery{width:260px}.ds-gallery-title{font-size:23px}}@media(prefers-reduced-motion:reduce){.ds-gallery{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Cinematic Course Gallery",
+    "overview": "Charcoal-navy grounds, ice-blue actions and original technical illustrations give this Hebrew learning platform a serious, cinematic character. Translucent slate belongs to course discovery; quieter opaque cards, fine dividers and readable rows support deeper learning content.\n\nThe finished gallery replaces the rejected Night Notebook identity, not the underlying learning tools. Course dashboards, module overviews, lesson readers and upcoming-course previews extend that identity through restrained learning interfaces. Marketing explicitly uses dark mode; learning screens preserve the user's light/dark preference.",
+    "keyCharacteristics": [
+      "Dark tonal layering with selective ice-blue emphasis.",
+      "Self-hosted Heebo, Hebrew RTL and explicit LTR technical content.",
+      "Original local SVG course artwork, reused across gallery and catalog.",
+      "Clear live/coming-soon states and content-derived facts."
+    ],
+    "rules": [
+      { "name": "The State Before Decoration Rule", "body": "Use ice for actions, focus and selection; course illustrations may also carry luminous blue and pale highlights.", "section": "colors" },
+      { "name": "The Language Direction Rule", "body": "Keep Hebrew prose RTL; code, technology tag runs and the physical carousel track are explicitly LTR. Use tabular numerals for progress and counts.", "section": "typography" },
+      { "name": "The Selection Owns Depth Rule", "body": "Gallery previews rest at scale (.91), opacity (.76); the selected card becomes full scale and opacity and rises (-12px). Catalog hover rises (-4px) with an ice border, without inheriting gallery glass.", "section": "elevation" },
+      { "name": "The Continuous Gallery Rule", "body": "A continuous position drives the track; modulo selection loops both ways. Recycle the twelve real cards offscreen, never duplicate tab IDs or rewind the full list at the boundary. Home/End select endpoints; both arrows remain enabled. Reduced motion centers instantly.", "section": "components" },
+      { "name": "The Learning Restraint Rule", "body": "Use opaque theme-aware surfaces, ruled curriculum rows and compact ledgers. Keep a 272px desktop sidebar, keyboard-accessible dashboard tabs, a 72ch lesson article and a 184px TOC from 1280px. Smaller screens use a drawer and expandable lesson index. Preserve curriculum, quizzes, notes and progress storage.", "section": "layout" }
+    ],
+    "dos": [
+      "**Do** reuse shared dark tokens and the observed corner hierarchy.",
+      "**Do** keep original local course artwork consistent across gallery and catalog.",
+      "**Do** preserve keyboard selection, visible focus, RTL/LTR boundaries and reduced-motion behavior.",
+      "**Do** label upcoming content honestly and derive counts from real curriculum or local progress."
+    ],
+    "donts": [
+      "**Don't** restore the rejected graph-paper notebook or handwritten display treatment.",
+      "**Don't** ban gradients, translucency or soft blue depth that the finished gallery uses.",
+      "**Don't** fabricate ratings, testimonials, enrollments or other proof.",
+      "**Don't** introduce external runtime image or font hosts."
+    ]
+  }
+}

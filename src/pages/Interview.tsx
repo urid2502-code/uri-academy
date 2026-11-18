@@ -100,7 +100,7 @@ function ScenarioDetail({ s }: { s: InterviewScenario }) {
   const next = scenarios[scenarios.indexOf(s) + 1];
 
   return (
-    <div className="mx-auto max-w-[1240px] px-5 pb-24 pt-8 lg:px-10">
+    <div className="mx-auto max-w-[1680px] px-5 pb-24 pt-8 lg:px-10">
       <a href={href.interview('design')} className="inline-flex items-center gap-1.5 text-[13px] text-faint hover:text-fg">
         <ArrowRight className="h-3.5 w-3.5" /> כל התרחישים
       </a>
@@ -305,13 +305,13 @@ export function Interview({ selectedId }: { selectedId?: string }) {
   const tab = selectedId === 'design' ? 'design' : 'qa';
 
   return (
-    <div className="mx-auto max-w-6xl px-5 pb-24 pt-8 lg:px-10">
+    <div className="mx-auto max-w-[1680px] px-5 pb-24 pt-8 lg:px-10">
       <header className="mb-6">
         <div className="flex items-center gap-2 text-[13px] font-bold text-rose-600 dark:text-rose-300">
           <Swords className="h-4 w-4" /> הכנה לראיון עבודה
         </div>
         <h1 className="mt-2 text-[32px] font-bold tracking-tight text-fg">להגיע לראיון מוכן</h1>
-        <p className="mt-2 max-w-3xl text-[16px] leading-7 text-muted">
+        <p className="mt-2 text-[16px] leading-7 text-muted">
           שני חלקים: <b className="text-fg">שאלות טכניות נפוצות</b> עם תשובות ברורות, ו-<b className="text-fg">תרגול System Design</b> – תכנון מערכת שלמה
           מול טיימר, עם פתרון מודרך ורשימת בדיקה.
         </p>

@@ -58,15 +58,13 @@ export function ProgressRing({ value, size = 44, stroke = 5 }: { value: number; 
 
 export function SectionHeader({ step, title, subtitle, id, icon }: { step: string; title: string; subtitle?: string; id: string; icon: ReactNode }) {
   return (
-    <div id={id} className="mb-5 mt-16 scroll-mt-6 first:mt-0">
+    <div id={id} className="lesson-section-heading mb-5 mt-14 scroll-mt-6 first:mt-0">
       <div className="flex items-center gap-3">
-        <span className="brand-gradient flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-soft">{icon}</span>
-        <div>
-          <div className="text-[12px] font-semibold text-faint">{step}</div>
-          <h2 className="text-[24px] font-bold leading-tight tracking-tight text-fg">{title}</h2>
-        </div>
+        <span className="text-brand">{icon}</span>
+        <h2 className="text-[23px] font-semibold leading-tight tracking-tight text-fg">{title}</h2>
+        <span className="ms-auto text-[12px] text-faint">{step}</span>
       </div>
-      {subtitle && <p className="ms-[52px] mt-1 text-[14px] text-faint">{subtitle}</p>}
+      {subtitle && <p className="mt-2 text-[14px] leading-7 text-faint">{subtitle}</p>}
     </div>
   );
 }

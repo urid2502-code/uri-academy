@@ -1,15 +1,21 @@
-import { GraduationCap, Menu } from 'lucide-react';
-import { MotionConfig } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { ArrowUpLeft, Code2, Menu } from 'lucide-react';
+import { motion, MotionConfig, useReducedMotion } from 'motion/react';
+import { useEffect, useMemo, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
+import { MotionToggle } from './components/MotionToggle';
 import { findLesson, modules } from './content';
 import { comparisons } from './content/comparisons';
 import { courses } from './content/courses';
 import { interviewQA, scenarios } from './content/interview';
+import { EASE_OUT } from './lib/motion';
+import { useMotionOff } from './lib/motion-pref';
+import { usePersistedFlag } from './lib/persisted';
 import { ProgressProvider } from './lib/progress';
 import { href, useRoute } from './lib/router';
 import { Catalog, CourseSoon } from './pages/Catalog';
 import { Comparisons } from './pages/Comparisons';
+import { Community } from './pages/Community';
+import { FocusMode } from './pages/FocusMode';
 import { Glossary } from './pages/Glossary';
 import { Home } from './pages/Home';
 import { Interview } from './pages/Interview';
@@ -31,7 +37,21 @@ function NotFound() {
 
 function Shell() {
   const route = useRoute();
+  const reducedMotion = useReducedMotion();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuHidden, setMenuHidden] = usePersistedFlag('uri-academy:menu-hidden:v1');
+
+  useEffect(() => {
+    // Ctrl/Cmd+B hides or shows the main menu on desktop, like a code editor's sidebar.
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b' && window.matchMedia('(min-width: 1024px)').matches) {
+        event.preventDefault();
+        setMenuHidden((hidden) => !hidden);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setMenuHidden]);
 
   const searchExtra = useMemo(
     () => [
@@ -91,6 +111,15 @@ function Shell() {
     case 'simulator':
       page = <Simulator />;
       break;
+    case 'focus': {
+      const found = findLesson(route.moduleId, route.lessonId);
+      if (found) return <FocusMode key={`${found.module.id}-${found.lesson.id}`} module={found.module} lesson={found.lesson} />;
+      page = <NotFound />;
+      break;
+    }
+    case 'community':
+      page = <Community />;
+      break;
     case 'comparisons':
       page = <Comparisons key={route.id ?? 'default'} selectedId={route.id} />;
       break;
@@ -103,10 +132,16 @@ function Shell() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="hidden lg:block">
-        <Sidebar route={route} searchExtra={searchExtra} />
-      </div>
+    <div className="learning-shell flex h-full">
+      <motion.div
+        className="hidden overflow-hidden lg:block"
+        initial={false}
+        animate={{ width: menuHidden ? 0 : 272 }}
+        transition={{ duration: reducedMotion ? 0 : 0.28, ease: EASE_OUT }}
+        inert={menuHidden}
+      >
+        <Sidebar route={route} searchExtra={searchExtra} onCollapse={() => setMenuHidden(true)} />
+      </motion.div>
       {mobileOpen && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <Sidebar route={route} searchExtra={searchExtra} onNavigate={() => setMobileOpen(false)} />
@@ -114,12 +149,20 @@ function Shell() {
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3 lg:hidden">
-          <button onClick={() => setMobileOpen(true)} className="rounded-xl border border-line p-1.5 text-muted" aria-label="פתח תפריט">
+        <header className="learning-topbar">
+          <button
+            onClick={() => (window.matchMedia('(min-width: 1024px)').matches ? setMenuHidden(false) : setMobileOpen(true))}
+            className={`rounded-lg border border-line p-2 text-muted transition hover:text-fg ${menuHidden ? '' : 'lg:hidden'}`}
+            aria-label="פתח תפריט"
+            aria-expanded={menuHidden ? false : mobileOpen}
+            title="פתח תפריט (Ctrl+B)"
+          >
             <Menu className="h-5 w-5" />
           </button>
-          <GraduationCap className="h-5 w-5 text-brand" />
-          <span className="text-[15px] font-bold text-fg">האקדמיה של אורי</span>
+          <Code2 className="hidden h-4 w-4 text-brand sm:block" />
+          <a href={href.home()} className="min-w-0 flex-1 truncate text-[13px] font-medium text-muted">מסלול Full Stack</a>
+          <a href={href.courses()} className="flex shrink-0 items-center gap-2 text-[12px] text-faint hover:text-fg">כל הקורסים<ArrowUpLeft className="h-3.5 w-3.5" /></a>
+          <MotionToggle />
         </header>
         <main id="main-scroll" className="flex-1 overflow-y-auto">
           {page}
@@ -130,8 +173,9 @@ function Shell() {
 }
 
 export default function App() {
+  const { userOff } = useMotionOff();
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={userOff ? 'always' : 'user'}>
       <ProgressProvider>
         <Shell />
       </ProgressProvider>
