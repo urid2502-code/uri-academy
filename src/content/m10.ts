@@ -1,0 +1,377 @@
+import { BlockStore } from '../lib/blocks';
+import type { Module } from '../types';
+import src from './m10.md?raw';
+
+const b = new BlockStore(src);
+
+export const module10: Module = {
+  id: 'm10',
+  number: 10,
+  stage: 3,
+  title: 'Cloud: Docker, Kubernetes ו-Observability',
+  short: 'Docker, K8s וניטור',
+  tagline: 'לארוז את הקוד ב-Container, להריץ אותו ב-Kubernetes בלי השבתות, ולראות בדיוק מה קורה ב-Production.',
+  icon: 'cloud',
+  tone: 'orange',
+  why: 'קוד שלא רץ יציב ב-Production לא שווה הרבה. מפתח Senior יודע לארוז שירות, להריץ אותו ב-Kubernetes עם Probes ו-Graceful Shutdown, ולמצוא תקלה תוך דקות בעזרת Logs, Metrics ו-Traces.',
+  outcomes: [
+    'לכתוב Dockerfile מקצועי (Multi-stage, Non-root, Exec-form) ולהריץ סביבה מקומית עם Docker Compose',
+    'להסביר Pod, Deployment, Service ו-Ingress ולכתוב Deployment עם Probes ו-Resources',
+    'לממש Graceful Shutdown ולבחור בין HPA ל-KEDA לפי סוג העומס',
+    'להוסיף Structured Logs, Metrics ו-Distributed Tracing עם OpenTelemetry ולהגדיר SLO והתראות',
+  ],
+  lessons: [
+    {
+      id: 'l1',
+      title: 'Docker מהיסוד: Image, Container ו-Dockerfile',
+      summary: 'איך פותרים את "אצלי זה עובד": Image מול Container, Dockerfile שורה אחרי שורה, פקודות בסיס, Ports, Environment Variables ו-Docker Compose.',
+      minutes: 30,
+      level: 'intermediate',
+      tags: ['Docker', 'Container', 'Dockerfile'],
+      intro: b.text('m10-l1', 'intro'),
+      deepDive: b.text('m10-l1', 'deepDive'),
+      diagram: {
+        title: 'מקוד ל-Container רץ',
+        columns: [
+          [
+            { label: 'Source Code', sub: 'src + package.json', detail: 'הקוד שלך ב-TypeScript, יחד עם רשימת התלויות.', tone: 'slate' },
+            { label: 'Dockerfile', sub: 'המתכון', detail: 'הוראות שורה אחרי שורה: מאיזה בסיס להתחיל, מה להתקין ואיך להפעיל.', tone: 'sky' },
+          ],
+          [{ label: 'docker build', sub: 'Multi-stage', detail: 'מריץ את ההוראות, יוצר Layers ושומר אותן ב-Cache כדי שהבנייה הבאה תהיה מהירה.', tone: 'amber' }],
+          [{ label: 'Image', sub: 'orders-api:3f9c2a1', detail: 'חבילה קפואה וקבועה שאפשר לשלוח ל-Registry ולהריץ בכל מקום.', tone: 'violet' }],
+          [
+            { label: 'Container', sub: 'docker run -p 8080:3000', detail: 'מופע רץ של ה-Image, עם Port ממופה ו-Environment Variables משלו.', tone: 'emerald' },
+            { label: 'Docker Compose', sub: 'api + postgres + redis', detail: 'כמה Containers ביחד על רשת משותפת, בפקודה אחת.', tone: 'orange' },
+          ],
+        ],
+      },
+      code: b.code('m10-l1'),
+      codeNotes: b.text('m10-l1', 'codeNotes'),
+      failureModes: [
+        {
+          title: 'CMD בצורת מחרוזת – SIGTERM לא מגיע לאפליקציה',
+          severity: 'high',
+          symptom: '`docker stop` לוקח בדיוק 10 שניות, ובכל Deploy חלק מהמשתמשים מקבלים שגיאות על בקשות שנקטעו באמצע.',
+          rootCause: '`CMD node dist/server.js` (או `npm start`) מריץ את Node דרך תהליך ביניים שלא מעביר את SIGTERM, ולכן התהליך נהרג עם SIGKILL.',
+          mitigation: 'להשתמש ב-Exec form: `CMD ["node", "dist/server.js"]`, ולטפל ב-SIGTERM בקוד (Graceful Shutdown).',
+        },
+        {
+          title: 'סודות נאפים לתוך ה-Image',
+          severity: 'critical',
+          symptom: 'סיסמת ה-DB של Production נמצאת ב-Image שהועלה ל-Registry, וכל מי שיש לו גישה יכול לשלוף אותה.',
+          rootCause: '`ENV DB_PASSWORD=...` ב-Dockerfile, או `COPY . .` בלי `.dockerignore` שהעתיק גם את `.env`.',
+          mitigation: 'להוסיף `.env` ל-`.dockerignore`, ולהעביר סודות רק בזמן ריצה: `--env-file`, Docker Compose או Secret של Kubernetes.',
+        },
+        {
+          title: 'האפליקציה מאזינה על localhost בתוך ה-Container',
+          severity: 'medium',
+          symptom: 'ה-Container רץ, הלוגים אומרים "listening on 3000", אבל `curl localhost:8080` מחזיר "connection refused".',
+          rootCause: '`localhost` בתוך Container הוא ה-Container עצמו, ולכן חיבורים שמגיעים מבחוץ דרך ה-Port Mapping לא מתקבלים.',
+          mitigation: 'להאזין על `0.0.0.0`, ולוודא שה-Port Mapping בסדר הנכון: `-p <מבחוץ>:<בפנים>`.',
+        },
+      ],
+      challenge: {
+        prompt: 'קח את ה-API של אפליקציית המשימות (Node.js + TypeScript) וארוז אותו ב-Docker: כתוב Dockerfile, קובץ .dockerignore ופקודות להרצה ובדיקה.',
+        constraints: [
+          'Multi-stage Build עם `npm ci`, ו-Image סופי מתחת ל-250MB',
+          'התהליך רץ כמשתמש שאינו root',
+          'הגדרות וסודות מגיעים מ-Environment Variables ולא מתוך ה-Image',
+          '`docker stop` מסתיים תוך פחות מ-3 שניות',
+        ],
+        hints: [
+          'העתק קודם את `package.json` ו-`package-lock.json`, הרץ `npm ci`, ורק אחר כך את שאר הקוד – בשביל ה-Cache.',
+          'ב-Images של Node כבר קיים משתמש בשם `node`.',
+          'אם העצירה לוקחת 10 שניות בדיוק – בדוק את צורת ה-CMD.',
+        ],
+        solution: b.text('m10-l1', 'solution'),
+      },
+      quiz: [
+        {
+          q: 'מה ההבדל בין Image ל-Container?',
+          options: [
+            'אין הבדל, אלה שני שמות לאותו דבר',
+            'Image הוא חבילה קפואה וקבועה; Container הוא מופע רץ שלה',
+            'Container הוא הקובץ שמגדיר איך לבנות Image',
+            'Image רץ ב-Production ו-Container רק בפיתוח',
+          ],
+          answer: 1,
+          explanation: 'כמו Class ו-Object: מ-Image אחד אפשר להריץ הרבה Containers. ה-Image לא משתנה; ה-Container הוא תהליך חי וזמני.',
+        },
+        {
+          q: 'מה המשמעות של `-p 8080:3000` ב-`docker run`?',
+          options: [
+            'האפליקציה תאזין על 8080 ו-3000 במקביל',
+            'Port 3000 במחשב שלך מופנה ל-8080 בתוך ה-Container',
+            'מגבילים את ה-Container ל-8080 בקשות בכל 3000 שניות',
+            'Port 8080 במחשב שלך מופנה ל-Port 3000 בתוך ה-Container',
+          ],
+          answer: 3,
+          explanation: 'הסדר הוא תמיד מבחוץ:בפנים. גולשים ל-localhost:8080, והבקשה מגיעה לאפליקציה שמאזינה על 3000 בתוך ה-Container.',
+        },
+        {
+          q: 'למה מעתיקים את package.json ומריצים npm ci לפני שמעתיקים את שאר הקוד?',
+          options: [
+            'כדי לנצל את ה-Layer Cache: אם רק הקוד השתנה, לא מתקינים מחדש את כל החבילות',
+            'כי Docker לא מסוגל להעתיק יותר מקובץ אחד בכל פעם',
+            'כדי שהקוד ירוץ מהר יותר ב-Production',
+            'זו דרישה של npm, אחרת ההתקנה נכשלת',
+          ],
+          answer: 0,
+          explanation: 'כל הוראה היא Layer. אם קבצי החבילות לא השתנו, Docker משתמש בתוצאה השמורה של npm ci ומדלג על שלב שלוקח דקות.',
+        },
+        {
+          q: 'ב-Docker Compose, איך שירות ה-api מתחבר ל-PostgreSQL שמוגדר כשירות בשם postgres?',
+          options: [
+            'דרך localhost:5432',
+            'דרך כתובת ה-IP הציבורית של המחשב',
+            'דרך שם השירות: postgres:5432',
+            'אי אפשר – צריך להתקין PostgreSQL בתוך ה-Container של ה-api',
+          ],
+          answer: 2,
+          explanation: 'Compose יוצר רשת משותפת שבה כל שירות נגיש לפי השם שלו. localhost בתוך ה-api הוא ה-Container של ה-api עצמו.',
+        },
+      ],
+      keyTerms: [
+        { term: 'Container', he: 'מכולה', def: 'תהליך מבודד שרץ עם כל מה שהקוד צריך – מערכת קבצים, ספריות והגדרות.' },
+        { term: 'Image', he: 'תמונה', def: 'חבילה קפואה ובלתי משתנה שממנה מריצים Containers.' },
+        { term: 'Dockerfile', he: 'קובץ הבנייה', def: 'קובץ טקסט עם הוראות לבניית Image, שורה אחרי שורה.' },
+        { term: 'Layer', he: 'שכבה', def: 'תוצאה של הוראה אחת ב-Dockerfile, שנשמרת ב-Cache ומשותפת בין Images.' },
+        { term: 'Multi-stage Build', he: 'בנייה רב-שלבית', def: 'Dockerfile עם כמה שלבי FROM, שבו רק התוצרים הנחוצים עוברים ל-Image הסופי.' },
+        { term: 'Registry', he: 'מאגר Images', def: 'שירות לאחסון ולהפצה של Images, כמו Docker Hub.' },
+        { term: 'Docker Compose', he: 'הרכבת שירותים', def: 'כלי שמריץ כמה Containers ביחד לפי קובץ YAML אחד.' },
+      ],
+    },
+    {
+      id: 'l2',
+      title: 'Kubernetes: Pods, Deployments, Probes ו-Autoscaling',
+      summary: 'למה צריך Orchestration, אבני הבניין של Kubernetes, Readiness מול Liveness, Resources, Rolling Updates, Graceful Shutdown ו-HPA מול KEDA.',
+      minutes: 35,
+      level: 'advanced',
+      tags: ['Kubernetes', 'Probes', 'Autoscaling'],
+      intro: b.text('m10-l2', 'intro'),
+      deepDive: b.text('m10-l2', 'deepDive'),
+      diagram: {
+        title: 'איך בקשה מגיעה ל-Pod',
+        columns: [
+          [{ label: 'Ingress', sub: 'shop.example.com/api', detail: 'הכניסה מהאינטרנט: מפנה כל נתיב ל-Service המתאים.', tone: 'sky' }],
+          [{ label: 'Service', sub: 'orders-api:80', detail: 'כתובת קבועה ומאזן עומסים, שולח רק ל-Pods שעברו Readiness.', tone: 'violet' }],
+          [
+            { label: 'Pod 1', sub: 'Ready', detail: 'מקבל תנועה. Liveness ו-Readiness עוברים.', tone: 'emerald' },
+            { label: 'Pod 2', sub: 'Ready', detail: 'עותק זהה על Node אחר – אם Node נופל, השירות ממשיך.', tone: 'emerald' },
+            { label: 'Pod 3', sub: 'Terminating', detail: 'קיבל SIGTERM, נכשל ב-Readiness ומסיים בקשות פתוחות לפני שיוצא.', tone: 'rose' },
+          ],
+          [
+            { label: 'Deployment', sub: 'replicas: 3', detail: 'משווה כל הזמן Desired State למצב בפועל ומעלה Pods חדשים כשצריך.', tone: 'amber' },
+            { label: 'HPA / KEDA', sub: 'Autoscaling', detail: 'משנים את מספר ה-replicas לפי CPU או לפי אורך התור.', tone: 'orange' },
+          ],
+        ],
+      },
+      code: b.code('m10-l2'),
+      codeNotes: b.text('m10-l2', 'codeNotes'),
+      failureModes: [
+        {
+          title: 'בדיקת מסד הנתונים ב-Liveness Probe',
+          severity: 'critical',
+          symptom: 'ה-DB האט לחצי דקה, ופתאום כל ה-Pods של השירות מופעלים מחדש בבת אחת – והאתר מושבת לגמרי.',
+          rootCause: 'Liveness שתלוי ב-DB נכשל בכל ה-Pods יחד; Kubernetes הורג את כולם, וכולם מנסים להתחבר מחדש ל-DB העמוס.',
+          mitigation: 'Liveness בודק רק שהתהליך עצמו חי (`/livez`). תלויות חיצוניות – לכל היותר ב-Readiness, ועדיף בזהירות.',
+        },
+        {
+          title: 'אין Graceful Shutdown – שגיאות בכל Deploy',
+          severity: 'high',
+          symptom: 'בכל Rolling Update יש קפיצה קצרה של שגיאות 502 ו-"Connection reset" בגרפים.',
+          rootCause: 'ה-Pod נסגר מיד עם SIGTERM, בזמן שה-Service עדיין שולח אליו בקשות ויש בקשות פתוחות באמצע טיפול.',
+          mitigation: 'ב-SIGTERM: להחזיר 503 ב-Readiness, לחכות כמה שניות, `server.close()`, לסגור חיבורים ורק אז לצאת – בתוך `terminationGracePeriodSeconds`.',
+        },
+        {
+          title: 'Limit זיכרון נמוך מדי – CrashLoopBackOff',
+          severity: 'medium',
+          symptom: '`kubectl get pods` מראה `CrashLoopBackOff`, ו-`kubectl describe` מראה `OOMKilled`.',
+          rootCause: 'ה-Limit נקבע לפי ניחוש, והאפליקציה צורכת יותר זיכרון בשיא – ולכן נהרגת שוב ושוב.',
+          mitigation: 'למדוד צריכה אמיתית ב-Metrics, לקבוע Requests לפי הממוצע ו-Limit עם מרווח מעל השיא, ולבדוק דליפות זיכרון.',
+        },
+      ],
+      challenge: {
+        prompt: 'יש לך notifications-worker שצורך הודעות מתור ושולח מיילים והתראות Push. כתוב לו Probes, Resources, הגדרת Autoscaling, ותאר מה הוא עושה כשהוא מקבל SIGTERM.',
+        constraints: [
+          'Liveness לא תלוי ב-DB או בתור',
+          'Requests ו-Limits מנומקים לפי מדידה (ממוצע 150m CPU, 200Mi זיכרון, שיא 350Mi)',
+          'Autoscaling שמגיב לעומס בתור גם כשה-CPU נמוך',
+          'אף הודעה לא הולכת לאיבוד בזמן כיבוי',
+        ],
+        hints: [
+          'האם ל-Worker שלא מקבל HTTP מבחוץ יש Service? מה זה אומר על Readiness?',
+          'Worker שמחכה לרשת כמעט לא צורך CPU – מה HPA יראה?',
+          'מה קורה להודעה שלא קיבלה Ack כשה-Pod נסגר?',
+        ],
+        solution: b.text('m10-l2', 'solution'),
+      },
+      quiz: [
+        {
+          q: 'מה קורה כש-Readiness Probe נכשל?',
+          options: [
+            'Kubernetes מוחק את ה-Deployment',
+            'ה-Pod יוצא זמנית מה-Service ולא מקבל תנועה, אבל לא מופעל מחדש',
+            'ה-Container נהרג ומופעל מחדש מיד',
+            'כל ה-Cluster עובר למצב תחזוקה',
+          ],
+          answer: 1,
+          explanation: 'Readiness עונה על "מוכן לקבל תנועה עכשיו?". כישלון מוציא את ה-Pod מה-Service. רק כישלון ב-Liveness גורם להפעלה מחדש.',
+        },
+        {
+          q: 'למה Pod צריך Service לפניו ולא פונים ישירות ל-IP של ה-Pod?',
+          options: [
+            'כי ל-Pod אין כתובת IP בכלל',
+            'כי Service מהיר יותר מכל Pod',
+            'כי Pods חד-פעמיים ומקבלים IP חדש בכל פעם; Service נותן כתובת קבועה ומאזן עומסים',
+            'כי Service מצפין את התעבורה אוטומטית',
+          ],
+          answer: 2,
+          explanation: 'Pods מתים ונולדים כל הזמן. Service מוצא אותם לפי Labels ונותן כתובת יציבה שמחלקת בקשות בין כל ה-Pods שהם Ready.',
+        },
+        {
+          q: 'Worker שצורך הודעות מתור כמעט לא משתמש ב-CPU, אבל התור מתמלא. מה הפתרון המתאים ל-Autoscaling?',
+          options: [
+            'HPA לפי CPU',
+            'להגדיל ידנית את ה-Limit של הזיכרון',
+            'להוסיף Liveness Probe',
+            'KEDA לפי אורך התור',
+          ],
+          answer: 3,
+          explanation: 'HPA לפי CPU לא יראה את העומס. KEDA מודד את מה שבאמת חשוב – כמה הודעות ממתינות – ומוסיף Pods בהתאם, ואף יורד לאפס.',
+        },
+        {
+          q: 'מה הסדר הנכון ב-Graceful Shutdown של שירות HTTP ב-Kubernetes?',
+          options: [
+            'להחזיר 503 ב-Readiness, לחכות כמה שניות, לסגור את השרת ולסיים בקשות פתוחות, לסגור חיבורי DB, לצאת',
+            'לצאת מיד עם process.exit(0)',
+            'לסגור קודם את חיבורי ה-DB ורק אחר כך להפסיק לקבל בקשות',
+            'להתעלם מ-SIGTERM ולחכות ל-SIGKILL',
+          ],
+          answer: 0,
+          explanation: 'קודם מפסיקים לקבל תנועה חדשה, אחר כך מסיימים את מה שבטיפול, ורק בסוף משחררים משאבים. סגירת ה-DB ראשונה תכשיל בקשות פתוחות.',
+        },
+      ],
+      keyTerms: [
+        { term: 'Pod', he: 'פוד', def: 'היחידה הקטנה ביותר ב-Kubernetes: Container אחד או יותר עם כתובת IP משותפת.' },
+        { term: 'Deployment', he: 'פריסה', def: 'אובייקט שמגדיר איזה Image להריץ, בכמה עותקים, ואיך לעדכן גרסה.' },
+        { term: 'Service', he: 'שירות', def: 'כתובת קבועה ומאזן עומסים פנימי מול קבוצת Pods משתנה.' },
+        { term: 'Ingress', he: 'כניסה', def: 'הכללים שמפנים תנועה מהאינטרנט ל-Services בתוך ה-Cluster.' },
+        { term: 'Readiness Probe', he: 'בדיקת מוכנות', def: 'בדיקה שקובעת אם Pod יקבל תנועה כרגע.' },
+        { term: 'Liveness Probe', he: 'בדיקת חיות', def: 'בדיקה שקובעת אם ה-Container תקוע וצריך להפעיל אותו מחדש.' },
+        { term: 'HPA', he: 'Horizontal Pod Autoscaler', def: 'רכיב שמשנה את מספר ה-Pods אוטומטית לפי CPU או זיכרון.' },
+      ],
+    },
+    {
+      id: 'l3',
+      title: 'Observability: Logs, Metrics ו-Traces',
+      summary: 'שלושת העמודים של נראוּת: Structured Logs, Metrics עם RED ו-Percentiles, Distributed Tracing עם OpenTelemetry, התראות ו-SLO.',
+      minutes: 35,
+      level: 'advanced',
+      tags: ['Observability', 'OpenTelemetry', 'SLO'],
+      intro: b.text('m10-l3', 'intro'),
+      deepDive: b.text('m10-l3', 'deepDive'),
+      diagram: {
+        title: 'מהקוד ועד ההתראה',
+        columns: [
+          [{ label: 'Service', sub: 'orders-api + OTel SDK', detail: 'הקוד מייצר לוגים, מודד מטריקות ופותח Spans – רובם אוטומטית.', tone: 'violet' }],
+          [{ label: 'OTel Collector', sub: 'OTLP', detail: 'מקבל את כל הנתונים במקום אחד, מסנן ומעביר לכל מערכת אחסון.', tone: 'slate' }],
+          [
+            { label: 'Logs', sub: 'Loki / Elasticsearch', detail: 'מה בדיוק קרה – JSON עם requestId ו-traceId.', tone: 'sky' },
+            { label: 'Metrics', sub: 'Prometheus', detail: 'מספרים לאורך זמן: Rate, Errors, Duration (p95/p99).', tone: 'amber' },
+            { label: 'Traces', sub: 'Jaeger / Tempo', detail: 'המסלול של בקשה אחת דרך כל השירותים והתורים.', tone: 'teal' },
+          ],
+          [
+            { label: 'Dashboards', sub: 'Grafana', detail: 'תמונת מצב במבט אחד, עם קפיצה מגרף ל-Trace ומשם ללוג.', tone: 'emerald' },
+            { label: 'Alerts', sub: 'SLO', detail: 'התראה כשמשתמשים מרגישים בעיה, או כש-Error Budget נשרף מהר מדי.', tone: 'rose' },
+          ],
+        ],
+      },
+      code: b.code('m10-l3'),
+      codeNotes: b.text('m10-l3', 'codeNotes'),
+      failureModes: [
+        {
+          title: 'סודות ומידע אישי בלוגים',
+          severity: 'critical',
+          symptom: 'בחיפוש במערכת הלוגים מופיעים Tokens של משתמשים, סיסמאות ומספרי כרטיס אשראי.',
+          rootCause: 'לוג של כל ה-Request כמו שהוא (כולל Headers ו-Body) בלי סינון, כי "זה עוזר לדבג".',
+          mitigation: 'להשתמש ב-`redact` של pino לשדות רגישים, לכתוב ללוג רק שדות שנבחרו במפורש, ולבדוק את זה ב-Code Review.',
+        },
+        {
+          title: 'מסתכלים רק על ממוצע זמן התגובה',
+          severity: 'high',
+          symptom: 'הגרף מראה ממוצע של 120ms ו"הכל ירוק", אבל לקוחות מתלוננים שהתשלום נתקע לפעמים לכמה שניות.',
+          rootCause: 'הממוצע מסתיר את ה"זנב" – אחוז קטן של בקשות איטיות מאוד נבלע בתוך הרבה בקשות מהירות.',
+          mitigation: 'למדוד זמנים עם Histogram, להציג p95 ו-p99, ולהגדיר SLO והתראות לפיהם.',
+        },
+        {
+          title: 'Trace נקטע במעבר דרך תור',
+          severity: 'medium',
+          symptom: 'ב-Jaeger רואים את ה-Trace של ה-API, אבל הטיפול בהודעה ב-Worker מופיע כ-Trace נפרד, בלי קשר.',
+          rootCause: 'ה-`traceparent` לא הועבר עם ההודעה – בתור אין כותרות HTTP שה-Auto-instrumentation מטפל בהן.',
+          mitigation: 'להוסיף `propagation.inject` לכותרות ההודעה ב-Producer, ו-`propagation.extract` ב-Consumer לפני פתיחת ה-Span.',
+        },
+      ],
+      challenge: {
+        prompt: 'תכנן Observability ל-checkout של חנות אונליין: הגדר SLI ו-SLO, בחר מטריקות, דאג שה-Trace ימשיך דרך תור ההתראות, והגדר התראות ולוגים.',
+        constraints: [
+          'SLI ו-SLO מוגדרים במספרים, כולל Error Budget',
+          'לפחות 4 מטריקות עם סוג (Counter/Gauge/Histogram) ו-Labels בלי High Cardinality',
+          'traceparent עובר מה-Producer ל-Consumer דרך ה-Headers של ההודעה',
+          'התראות על סימפטומים שמשתמשים מרגישים בלבד',
+        ],
+        hints: [
+          'SLI טוב משלב הצלחה וגם מהירות: "לא 5xx וגם מתחת לשנייה".',
+          'orderId הוא Label גרוע ל-Metric – איפה כן שמים אותו?',
+          'ב-Producer: `propagation.inject(context.active(), headers)`. ב-Consumer: `propagation.extract`.',
+        ],
+        solution: b.text('m10-l3', 'solution'),
+      },
+      quiz: [
+        {
+          q: 'מה המשמעות של p99 = 1.8 שניות?',
+          options: [
+            '99% מהבקשות לקחו בדיוק 1.8 שניות',
+            'הממוצע של כל הבקשות הוא 1.8 שניות',
+            '99% מהבקשות לקחו 1.8 שניות או פחות; 1% לקחו יותר',
+            'השירות זמין 99% מהזמן',
+          ],
+          answer: 2,
+          explanation: 'אם מסדרים את הבקשות מהמהירה לאיטית, p99 הוא הערך שרק 1% מהבקשות גרועות ממנו. זה "הזנב" שהממוצע מסתיר.',
+        },
+        {
+          q: 'איזה סוג Metric מתאים למדידת אורך תור ההודעות כרגע?',
+          options: ['Gauge', 'Counter', 'Histogram', 'Trace'],
+          answer: 0,
+          explanation: 'אורך התור עולה ויורד – זה "מצב עכשיו", כלומר Gauge. Counter רק עולה, ו-Histogram מתאר התפלגות כמו זמני תגובה.',
+        },
+        {
+          q: 'מה תפקיד הכותרת traceparent?',
+          options: [
+            'להצפין את הבקשה בין השירותים',
+            'לזהות את המשתמש המחובר',
+            'לקבוע את עדיפות הבקשה בתור',
+            'להעביר את ה-traceId ואת ה-Span ההורה לשירות הבא, כדי שימשיך את אותו Trace',
+          ],
+          answer: 3,
+          explanation: 'traceparent הוא תקן W3C שמעביר את ההקשר של ה-Trace. בלעדיו כל שירות יתחיל Trace חדש ולא נראה את המסלול המלא.',
+        },
+        {
+          q: 'SLO של 99.9% זמינות בחודש של 30 יום. כמה זמן תקלה בערך מותר לפי ה-Error Budget?',
+          options: ['כ-7 שעות', 'כ-43 דקות', 'כ-4 דקות', 'אפס – אסור שתהיה תקלה בכלל'],
+          answer: 1,
+          explanation: '0.1% מ-30 יום (43,200 דקות) הם כ-43 דקות. זה התקציב שמותר "לבזבז" על תקלות ועל סיכונים של שחרור פיצ׳רים.',
+        },
+      ],
+      keyTerms: [
+        { term: 'Observability', he: 'נראוּת', def: 'היכולת להבין מה קורה בתוך מערכת רק מהמידע שהיא מוציאה החוצה.' },
+        { term: 'Structured Log', he: 'לוג מובנה', def: 'רשומת לוג בפורמט JSON עם שדות קבועים שאפשר לסנן ולחפש לפיהם.' },
+        { term: 'Correlation ID', he: 'מזהה קישור', def: 'מזהה ייחודי לבקשה שמוצמד לכל הלוגים שלה, גם בין שירותים.' },
+        { term: 'Histogram', he: 'היסטוגרמה', def: 'Metric שמתאר התפלגות ערכים, וממנו מחשבים p50, p95 ו-p99.' },
+        { term: 'Trace / Span', he: 'מסלול / שלב', def: 'Trace הוא המסע של בקשה אחת; Span הוא שלב אחד בו, עם משך והורה.' },
+        { term: 'OpenTelemetry', he: 'OTel', def: 'סטנדרט פתוח וספריות לאיסוף Traces, Metrics ו-Logs בלי תלות בספק.' },
+        { term: 'SLO', he: 'יעד רמת שירות', def: 'יעד מספרי לאמינות, כמו 99.9% בקשות מוצלחות בחודש, שממנו נגזר ה-Error Budget.' },
+      ],
+    },
+  ],
+};
