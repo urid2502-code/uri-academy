@@ -1,15 +1,19 @@
 import { GraduationCap, Menu } from 'lucide-react';
+import { MotionConfig } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { findLesson, modules } from './content';
 import { comparisons } from './content/comparisons';
+import { courses } from './content/courses';
 import { interviewQA, scenarios } from './content/interview';
 import { ProgressProvider } from './lib/progress';
 import { href, useRoute } from './lib/router';
+import { Catalog, CourseSoon } from './pages/Catalog';
 import { Comparisons } from './pages/Comparisons';
 import { Glossary } from './pages/Glossary';
 import { Home } from './pages/Home';
 import { Interview } from './pages/Interview';
+import { Landing } from './pages/Landing';
 import { LessonPage } from './pages/LessonPage';
 import { ModulePage } from './pages/ModulePage';
 import { Simulator } from './pages/Simulator';
@@ -61,6 +65,16 @@ function Shell() {
 
   let page;
   switch (route.name) {
+    case 'landing':
+      return <Landing />;
+    case 'courses':
+      return <Catalog />;
+    case 'course': {
+      const c = courses.find((x) => x.id === route.courseId && x.status === 'soon');
+      if (c) return <CourseSoon key={c.id} course={c} />;
+      page = <NotFound />;
+      break;
+    }
     case 'home':
       page = <Home />;
       break;
@@ -117,8 +131,10 @@ function Shell() {
 
 export default function App() {
   return (
-    <ProgressProvider>
-      <Shell />
-    </ProgressProvider>
+    <MotionConfig reducedMotion="user">
+      <ProgressProvider>
+        <Shell />
+      </ProgressProvider>
+    </MotionConfig>
   );
 }

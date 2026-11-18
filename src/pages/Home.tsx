@@ -90,7 +90,7 @@ export function Home() {
         {[
           { label: 'שיעורים שהושלמו', value: `${done}/${total}`, icon: CheckCircle2, cls: 'text-emerald-500' },
           { label: 'ממוצע מבחנים', value: quizzes.length ? `${avgQuiz}%` : '—', icon: Award, cls: 'text-amber-500' },
-          { label: 'תרגילים שפתרת', value: `${exercises}`, icon: Brain, cls: 'text-violet-500' },
+          { label: 'תרגילים שפתרת', value: `${exercises}`, icon: Brain, cls: 'text-sky-500' },
           { label: 'מונחים במילון', value: `${glossary.length}`, icon: BookA, cls: 'text-sky-500' },
         ].map((s) => (
           <div key={s.label} className="card shadow-soft p-5">

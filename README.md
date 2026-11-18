@@ -36,4 +36,4 @@ src/lib/       ניתוב, שמירת התקדמות, מפרק התוכן, הד�
 להוספה או עריכה של תוכן ראו [CONTENT_GUIDE.md](./CONTENT_GUIDE.md). לבדיקת קובצי תוכן:
 `node scripts/check-content.mjs m1 m2`.
 
-Stack: React 19, TypeScript, Tailwind CSS v4, Lucide, Vite, גופן Rubik מקומי – בלי תלות באינטרנט.
+Stack: React 19, TypeScript, Tailwind CSS v4, Lucide, Motion, Vite, גופני Heebo ו-Playpen Sans Hebrew מקומיים – בלי תלות באינטרנט. מערכת העיצוב מתועדת ב-[DESIGN.md](DESIGN.md).

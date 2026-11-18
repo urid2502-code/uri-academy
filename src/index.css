@@ -3,7 +3,8 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
-  --font-sans: "Rubik Variable", "Rubik", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  --font-sans: "Heebo Variable", "Heebo", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  --font-ink: "Playpen Sans Hebrew Variable", "Heebo Variable", cursive;
   --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, ui-monospace, monospace;
 }
 
@@ -19,36 +20,46 @@
   --color-brand: var(--brand);
   --color-brand-fg: var(--brand-fg);
   --color-teal: var(--teal);
+  --color-ice: var(--ice);
+  --color-fjord: var(--fjord);
+  --color-night: var(--night);
 }
 
+/* Arctic palette: polar night grounds, fjord blue for state, glacier ice as the one accent. */
 :root,
 [data-theme="light"] {
-  --bg: #f6f5fb;
-  --surface: #ffffff;
-  --surface-2: #f1effa;
-  --line: #e6e3f2;
-  --line-strong: #d4cfe8;
-  --fg: #1b1838;
-  --muted: #565274;
-  --faint: #8b87a6;
-  --brand: #6d4aff;
-  --brand-fg: #ffffff;
-  --teal: #0f9f95;
+  --bg: oklch(97.6% 0.008 240);
+  --surface: oklch(99.4% 0.003 240);
+  --surface-2: oklch(95.2% 0.012 240);
+  --line: oklch(89.5% 0.016 245);
+  --line-strong: oklch(81% 0.024 248);
+  --fg: oklch(20% 0.035 255);
+  --muted: oklch(40% 0.03 252);
+  --faint: oklch(53% 0.028 250);
+  --brand: oklch(47% 0.13 252);
+  --brand-fg: oklch(98.5% 0.006 240);
+  --teal: oklch(55% 0.1 200);
+  --ice: oklch(47% 0.13 252);
+  --fjord: oklch(40% 0.12 254);
+  --night: oklch(20% 0.035 255);
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: #0e0d1c;
-  --surface: #17162b;
-  --surface-2: #1f1d38;
-  --line: #2a2846;
-  --line-strong: #3a3760;
-  --fg: #eeecfb;
-  --muted: #b2aed0;
-  --faint: #7d79a0;
-  --brand: #8f75ff;
-  --brand-fg: #0e0d1c;
-  --teal: #2dd4bf;
+  --bg: oklch(11.5% 0.026 256);
+  --surface: oklch(14.8% 0.03 256);
+  --surface-2: oklch(18.4% 0.034 255);
+  --line: oklch(26% 0.04 254);
+  --line-strong: oklch(35% 0.05 252);
+  --fg: oklch(95.5% 0.012 236);
+  --muted: oklch(81% 0.024 238);
+  --faint: oklch(66% 0.03 244);
+  --brand: oklch(85% 0.095 226);
+  --brand-fg: oklch(16% 0.04 256);
+  --teal: oklch(78% 0.1 200);
+  --ice: oklch(85% 0.095 226);
+  --fjord: oklch(52% 0.13 252);
+  --night: oklch(9% 0.022 258);
   color-scheme: dark;
 }
 
@@ -63,10 +74,12 @@ body {
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "tnum" 0;
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--brand) 25%, transparent);
+  background: color-mix(in oklab, var(--ice) 32%, transparent);
+  color: var(--fg);
 }
 
 * {
@@ -74,42 +87,49 @@ body {
   scrollbar-color: var(--line-strong) transparent;
 }
 
+:focus-visible {
+  outline: 2px solid var(--ice);
+  outline-offset: 3px;
+}
+
+a {
+  text-underline-offset: 0.22em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
 .bg-dots {
   background-image: radial-gradient(color-mix(in oklab, var(--fg) 9%, transparent) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
+/* Flat fjord fill used for the brand mark and small solid accents in the app. */
 .brand-gradient {
-  background-image: linear-gradient(135deg, #7c5cff 0%, #5b8cff 50%, #14b8a6 100%);
-}
-
-.text-gradient {
-  background-image: linear-gradient(90deg, #7c5cff, #14b8a6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  background: var(--fjord);
 }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
 }
 
 .shadow-soft {
-  box-shadow: 0 1px 2px rgb(20 16 60 / 0.04), 0 8px 24px -12px rgb(20 16 60 / 0.12);
+  box-shadow: 0 1px 2px oklch(20% 0.04 255 / 0.05), 0 10px 26px -14px oklch(20% 0.04 255 / 0.18);
 }
 
 [data-theme="dark"] .shadow-soft {
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  box-shadow: 0 1px 2px oklch(4% 0.01 256 / 0.4), 0 12px 30px -14px oklch(4% 0.01 256 / 0.7);
 }
 
 .glow-active {
-  box-shadow: 0 0 0 2px var(--brand), 0 0 24px -4px var(--brand);
+  box-shadow: 0 0 0 2px var(--ice), 0 8px 22px -8px color-mix(in oklab, var(--ice) 45%, transparent);
 }
 
 .glow-fail {
-  box-shadow: 0 0 0 2px #f43f5e, 0 0 24px -4px #f43f5e;
+  box-shadow: 0 0 0 2px oklch(64% 0.19 22), 0 8px 22px -8px oklch(64% 0.19 22 / 0.45);
 }
 
 @keyframes dash {
@@ -138,18 +158,129 @@ body {
   animation: fade-up 0.35s ease-out both;
 }
 
-/* Code is always LTR and always on a dark surface. */
-.code-surface {
-  background: #11101f;
-  color: #e5e3f5;
+/* ---------- Night notebook (landing + catalog) ---------- */
+
+.nb-sheet {
+  --cell: 26px;
+  --margin-x: 64px;
+  background-color: var(--night);
+  background-image:
+    linear-gradient(oklch(80% 0.07 230 / 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(80% 0.07 230 / 0.09) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  background-position: 0 0;
+  color: var(--fg);
 }
 
-.tok-comment { color: #7f7aa3; font-style: italic; }
-.tok-string { color: #a5e3b5; }
-.tok-keyword { color: #c4a7ff; }
-.tok-number { color: #fbbf77; }
-.tok-type { color: #67e8f9; }
-.tok-fn { color: #93c5fd; }
-.tok-punct { color: #a3a0c2; }
-.tok-prop { color: #f0abfc; }
-.tok-const { color: #fda4af; }
+@media (max-width: 767px) {
+  .nb-sheet {
+    --cell: 22px;
+    --margin-x: 26px;
+  }
+}
+
+/* The notebook's margin rule, on the reading-start edge. */
+.nb-margin::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--margin-x);
+  width: 1px;
+  background: oklch(82% 0.09 226 / 0.42);
+  pointer-events: none;
+}
+
+.nb-margin::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(var(--margin-x) + 4px);
+  width: 1px;
+  background: oklch(82% 0.09 226 / 0.18);
+  pointer-events: none;
+}
+
+.ink {
+  font-family: var(--font-ink);
+  color: var(--ice);
+}
+
+.rule-b {
+  border-bottom: 1px solid oklch(80% 0.07 230 / 0.16);
+}
+
+.rule-t {
+  border-top: 1px solid oklch(80% 0.07 230 / 0.16);
+}
+
+.btn-ice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 2px;
+  background: var(--ice);
+  color: var(--brand-fg);
+  font-weight: 600;
+  font-size: 14.5px;
+  padding: 0.55rem 1rem;
+  transition: background-color 160ms ease-out;
+}
+
+.btn-ice:hover {
+  background: oklch(91% 0.07 222);
+}
+
+.btn-ice-lg {
+  font-size: 16px;
+  padding: 0.85rem 1.4rem;
+}
+
+.link-quiet {
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+  transition: color 160ms ease-out, text-decoration-color 160ms ease-out;
+}
+
+.link-quiet:hover {
+  color: var(--fg);
+  text-decoration-color: var(--ice);
+}
+
+.display-thin {
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.h2-note {
+  font-weight: 300;
+  letter-spacing: -0.012em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+/* Code is always LTR and always on a dark surface. */
+.code-surface {
+  background: oklch(13% 0.03 256);
+  color: oklch(93% 0.015 236);
+}
+
+.tok-comment { color: oklch(66% 0.03 244); font-style: italic; }
+.tok-string { color: oklch(85% 0.1 165); }
+.tok-keyword { color: oklch(80% 0.1 262); }
+.tok-number { color: oklch(84% 0.1 70); }
+.tok-type { color: oklch(85% 0.095 215); }
+.tok-fn { color: oklch(80% 0.1 245); }
+.tok-punct { color: oklch(72% 0.03 240); }
+.tok-prop { color: oklch(84% 0.08 300); }
+.tok-const { color: oklch(78% 0.12 20); }
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-dash,
+  .animate-fade-up {
+    animation: none !important;
+  }
+}

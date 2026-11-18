@@ -49,23 +49,18 @@ export const CodeBlock = memo(function CodeBlock({ code, lang, title, maxHeight 
   };
 
   return (
-    <div className="code-surface my-5 overflow-hidden rounded-2xl border border-black/10 shadow-soft dark:border-white/10">
+    <div className="code-surface my-5 overflow-hidden rounded-lg border border-black/10 dark:border-white/10">
       <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-white/[0.03] px-4 py-2.5">
-        <div className="flex min-w-0 items-center gap-2 text-xs text-[#b5b1d6]">
-          <span className="flex gap-1.5" aria-hidden>
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-          </span>
-          <FileCode2 className="ms-2 h-3.5 w-3.5 shrink-0 text-violet-300" />
-          <span className="truncate font-medium text-[#e5e3f5]">{title ?? 'קוד'}</span>
-          <span className="rounded-md bg-white/10 px-1.5 py-px font-mono text-[10px] uppercase tracking-wide text-[#b5b1d6]">
+        <div className="flex min-w-0 items-center gap-2 text-xs text-slate-300">
+          <FileCode2 className="h-3.5 w-3.5 shrink-0 text-sky-300" />
+          <span className="truncate font-medium text-slate-100">{title ?? 'קוד'}</span>
+          <span className="rounded-md bg-white/10 px-1.5 py-px font-mono text-[10px] uppercase tracking-wide text-slate-300">
             {LANG_LABEL[lang] ?? lang}
           </span>
         </div>
         <button
           onClick={copy}
-          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] text-[#e5e3f5] transition hover:bg-white/20"
+          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] text-slate-100 transition hover:bg-white/20"
           aria-label="העתק קוד"
         >
           {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
@@ -74,7 +69,7 @@ export const CodeBlock = memo(function CodeBlock({ code, lang, title, maxHeight 
       </div>
       <div dir="ltr" className="overflow-auto text-left" style={{ maxHeight: maxHeight ?? 620 }}>
         <div className="flex min-w-max">
-          <div aria-hidden className="select-none border-r border-white/5 py-4 pl-4 pr-3 text-right font-mono text-[12px] leading-[1.75] text-[#5d5980]">
+          <div aria-hidden className="select-none border-r border-white/5 py-4 pl-4 pr-3 text-right font-mono text-[12px] leading-[1.75] text-slate-500">
             {Array.from({ length: lineCount }, (_, i) => (
               <div key={i}>{i + 1}</div>
             ))}

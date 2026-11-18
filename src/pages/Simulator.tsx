@@ -302,7 +302,7 @@ interface LogLine {
 const SLO_MS = 1000;
 
 const levelCls: Record<Level, string> = {
-  info: 'text-[#b5b1d6]',
+  info: 'text-slate-300',
   ok: 'text-emerald-300',
   warn: 'text-amber-300',
   error: 'text-rose-300',
@@ -564,7 +564,7 @@ export function Simulator() {
             </div>
             <div className="bg-dots overflow-x-auto px-5 pb-6 pt-8">
               <div className="relative min-w-[860px]">
-                <div className="absolute inset-x-[8.33%] top-[40px] h-0.5 bg-gradient-to-l from-violet-400/50 via-sky-400/50 to-teal-400/50" />
+                <div className="absolute inset-x-[8.33%] top-[40px] h-0.5 bg-gradient-to-l from-sky-400/40 via-sky-400/40 to-sky-400/40" />
                 {current !== null && (
                   <div
                     className="absolute top-[33px] z-10 h-4 w-4 rounded-full bg-brand shadow-[0_0_18px_6px_color-mix(in_oklab,var(--brand)_55%,transparent)]"
@@ -643,17 +643,17 @@ export function Simulator() {
 
           <div className="grid gap-5 lg:grid-cols-2">
             <div className="code-surface flex flex-col overflow-hidden rounded-2xl border border-black/10 dark:border-white/10">
-              <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2.5 text-[13px] font-semibold text-[#e5e3f5]">
+              <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2.5 text-[13px] font-semibold text-slate-100">
                 <Terminal className="h-4 w-4" /> Logs – מה כל שרת כותב ביומן
               </div>
               <div ref={logRef} className="h-[320px] overflow-y-auto px-4 py-3 text-[12.5px] leading-[1.8]">
-                {logs.length === 0 && <div className="text-[#7f7aa3]">היומן ריק. לחץ "שלח בקשה"…</div>}
+                {logs.length === 0 && <div className="text-slate-400">היומן ריק. לחץ "שלח בקשה"…</div>}
                 {logs.map((l, i) => (
                   <div key={i} className="animate-fade-up flex gap-2">
-                    <span dir="ltr" className="w-[58px] shrink-0 font-mono text-[#7f7aa3]">
+                    <span dir="ltr" className="w-[58px] shrink-0 font-mono text-slate-400">
                       +{l.t}ms
                     </span>
-                    <span dir="ltr" className="w-[70px] shrink-0 font-mono text-violet-300">
+                    <span dir="ltr" className="w-[70px] shrink-0 font-mono text-sky-300">
                       {STAGES.find((s) => s.id === l.stage)?.label}
                     </span>
                     <span className={levelCls[l.level]}>{l.msg}</span>

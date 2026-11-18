@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
 export type Route =
+  | { name: 'landing' }
+  | { name: 'courses' }
+  | { name: 'course'; courseId: string }
   | { name: 'home' }
   | { name: 'module'; moduleId: string }
   | { name: 'lesson'; moduleId: string; lessonId: string }
@@ -12,6 +15,13 @@ export type Route =
 export function parseHash(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   switch (parts[0]) {
+    case undefined:
+      return { name: 'landing' };
+    case 'courses':
+      return { name: 'courses' };
+    case 'course':
+      if (!parts[1] || parts[1] === 'fullstack') return { name: 'home' };
+      return { name: 'course', courseId: parts[1] };
     case 'm':
       if (parts[1] && parts[2]) return { name: 'lesson', moduleId: parts[1], lessonId: parts[2] };
       if (parts[1]) return { name: 'module', moduleId: parts[1] };
@@ -25,12 +35,16 @@ export function parseHash(hash: string): Route {
     case 'glossary':
       return { name: 'glossary', term: parts[1] ? decodeURIComponent(parts[1]) : undefined };
     default:
-      return { name: 'home' };
+      return { name: 'landing' };
   }
 }
 
 export const href = {
-  home: () => '#/',
+  landing: () => '#/',
+  courses: () => '#/courses',
+  course: (id: string) => `#/course/${id}`,
+  /** Dashboard of the live Full Stack course. */
+  home: () => '#/course/fullstack',
   module: (m: string) => `#/m/${m}`,
   lesson: (m: string, l: string) => `#/m/${m}/${l}`,
   simulator: () => '#/simulator',
@@ -57,10 +71,10 @@ export function useRoute(): Route {
 }
 
 export type Theme = 'light' | 'dark';
-const THEME_KEY = 'uri-academy:theme';
+const THEME_KEY = 'uri-academy:theme:v2';
 
 export function useTheme(): [Theme, () => void] {
-  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'));
+  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'));
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try {

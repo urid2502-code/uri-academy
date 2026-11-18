@@ -102,7 +102,7 @@ export function Inline({ text }: { text: string }) {
     const tok = m[0];
     if (tok.startsWith('`'))
       parts.push(
-        <code key={k++} dir="ltr" className="rounded-md border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em] text-violet-700 dark:text-violet-200">
+        <code key={k++} dir="ltr" className="rounded-md border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em] text-blue-800 dark:text-sky-200">
           {tok.slice(1, -1)}
         </code>,
       );
@@ -147,8 +147,8 @@ const CALLOUTS: Record<string, { icon: typeof Info; cls: string; label: string }
   tip: { icon: Lightbulb, cls: 'border-emerald-500/30 bg-emerald-500/[0.07] text-emerald-700 dark:text-emerald-300', label: 'טיפ של מקצוענים' },
   warn: { icon: AlertTriangle, cls: 'border-amber-500/35 bg-amber-500/[0.08] text-amber-700 dark:text-amber-300', label: 'זהירות' },
   danger: { icon: ShieldAlert, cls: 'border-rose-500/35 bg-rose-500/[0.07] text-rose-700 dark:text-rose-300', label: 'סכנה' },
-  example: { icon: Sparkles, cls: 'border-violet-500/30 bg-violet-500/[0.07] text-violet-700 dark:text-violet-300', label: 'דוגמה מהחיים' },
-  fintech: { icon: Sparkles, cls: 'border-violet-500/30 bg-violet-500/[0.07] text-violet-700 dark:text-violet-300', label: 'דוגמה מהחיים' },
+  example: { icon: Sparkles, cls: 'border-sky-500/30 bg-sky-500/[0.07] text-sky-800 dark:text-sky-300', label: 'דוגמה מהחיים' },
+  fintech: { icon: Sparkles, cls: 'border-sky-500/30 bg-sky-500/[0.07] text-sky-800 dark:text-sky-300', label: 'דוגמה מהחיים' },
   note: { icon: Info, cls: 'border-sky-500/30 bg-sky-500/[0.07] text-sky-700 dark:text-sky-300', label: 'שים לב' },
 };
 
