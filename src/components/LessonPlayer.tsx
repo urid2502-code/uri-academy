@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { lessonKey, neighbours } from '../content';
+import { lessonKey, neighbours, trackForModule } from '../content';
 import { EASE_OUT } from '../lib/motion';
 import { usePersistedFlag } from '../lib/persisted';
 import { useProgress } from '../lib/progress-context';
@@ -62,7 +62,7 @@ function LessonComplete({ module, lesson }: { module: Module; lesson: Lesson }) 
           לשיעור הבא <ArrowLeft className="h-4 w-4" />
         </a>
       ) : (
-        <a className="btn-ice" href={href.home()}>לדף המסלול</a>
+        <a className="btn-ice" href={href.course(trackForModule(module.id))}>לדף המסלול</a>
       )}
     </motion.div>
   );

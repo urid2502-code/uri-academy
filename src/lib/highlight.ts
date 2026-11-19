@@ -23,6 +23,16 @@ const tsRules: Rule[] = [
   ['tok-punct', /=>|[{}()[\];,.<>:?!|&=+\-*/%]/y],
 ];
 
+const javaRules: Rule[] = [
+  tsRules[0],
+  ['tok-string', /"(?:\\.|[^\\"\n])*"|'(?:\\.|[^\\'\n])*'/y],
+  ['tok-keyword', /\b(?:abstract|assert|break|case|catch|class|continue|default|do|else|enum|extends|final|finally|for|if|implements|import|instanceof|interface|new|package|private|protected|public|record|return|sealed|static|super|switch|synchronized|this|throw|throws|try|var|while|yield)\b/y],
+  ['tok-type', /\b(?:boolean|byte|char|double|float|int|long|short|void)\b/y],
+  ['tok-const', /\b(?:true|false|null)\b/y],
+  ['tok-number', /\b\d[\d_]*(?:\.\d+)?[lLfFdD]?\b/y],
+  ...tsRules.slice(6),
+];
+
 const SQL_KEYWORDS =
   'select|from|where|and|or|not|insert|into|values|update|set|delete|create|table|index|unique|on|primary|key|references|foreign|constraint|default|null|is|in|as|join|left|right|inner|outer|group|by|order|having|limit|offset|returning|conflict|do|nothing|begin|commit|rollback|transaction|isolation|level|serializable|repeatable|read|committed|for|skip|locked|nowait|partition|range|list|hash|of|with|using|gin|btree|brin|gist|include|concurrently|if|exists|explain|analyze|buffers|alter|add|column|check|generated|always|identity|cascade|case|when|then|else|end|over|desc|asc|distinct|interval|lateral|exclude|between|like|ilike|row|level|security|policy|enable|to|grant|function|returns|language|trigger|execute|procedure|before|after|each|new|old|declare|vacuum|cluster|nulls|first|last|filter|coalesce|count|sum|avg|max|min|now|true|false';
 const SQL_TYPES =
@@ -100,6 +110,7 @@ const LANGS: Record<string, Rule[]> = {
   tsx: tsRules,
   javascript: tsRules,
   js: tsRules,
+  java: javaRules,
   sql: sqlRules,
   yaml: yamlRules,
   yml: yamlRules,

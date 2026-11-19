@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LessonBody } from '../components/LessonSteps';
 import { SlidingTabs, TabPanel } from '../components/Tabs';
 import { SECTIONS } from '../components/lesson-sections';
-import { allLessons, lessonKey, modules, neighbours } from '../content';
+import { getTrack, lessonKey, neighbours, trackForModule } from '../content';
 import { useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
 import type { Lesson, Module } from '../types';
@@ -11,6 +11,7 @@ import type { Lesson, Module } from '../types';
 type PanelTab = 'notes' | 'timeline';
 
 export function FocusMode({ module, lesson }: { module: Module; lesson: Lesson }) {
+  const { lessons: allLessons } = getTrack(trackForModule(module.id));
   const key = lessonKey(module, lesson);
   const { isComplete, setComplete, visit } = useProgress();
   const complete = isComplete(key);
@@ -187,7 +188,7 @@ function MasteryTimeline({ currentModule, currentLesson }: { currentModule: Modu
 
   return (
     <ol className="mastery-timeline">
-      {modules.map((module) => {
+      {getTrack(trackForModule(currentModule.id)).modules.map((module) => {
         const finished = module.lessons.filter((item) => state.completed.includes(lessonKey(module, item))).length;
         const expanded = open.has(module.id);
         const done = finished === module.lessons.length;

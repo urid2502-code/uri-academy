@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { findLesson, getTrack, trackForModule, type TrackId } from '../content';
 
 export const STORAGE_KEY = 'uri-academy:progress:v1';
 
@@ -18,6 +19,7 @@ export interface ProgressState {
   lessonSteps: Record<string, { index: number; furthest: number }>;
   quizDrafts: Record<string, QuizDraft>;
   lastVisited?: { moduleId: string; lessonId: string };
+  lastByTrack?: Partial<Record<TrackId, NonNullable<ProgressState['lastVisited']>>>;
 }
 
 export interface QuizDraft {
@@ -27,6 +29,19 @@ export interface QuizDraft {
 }
 
 export const empty: ProgressState = { completed: [], quiz: {}, notes: {}, checklists: {}, lessonSteps: {}, quizDrafts: {} };
+
+export function courseProgress(state: ProgressState, id: TrackId) {
+  const { lessons } = getTrack(id);
+  const visit = state.lastByTrack?.[id] ?? state.lastVisited;
+  const last = visit && trackForModule(visit.moduleId) === id ? findLesson(visit.moduleId, visit.lessonId) : null;
+  const done = lessons.filter(({ key }) => state.completed.includes(key)).length;
+  return {
+    last,
+    done,
+    pct: Math.round(done / lessons.length * 100),
+    resume: last ?? lessons.find(({ key }) => !state.completed.includes(key)),
+  };
+}
 
 export function load(): ProgressState {
   try {

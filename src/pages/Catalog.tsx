@@ -6,10 +6,11 @@ import { CourseCard } from '../components/CourseCard';
 import { CourseHeader } from '../components/CourseHeader';
 import { courseVisual } from '../components/course-visuals';
 import { SlidingTabs } from '../components/Tabs';
-import { allLessons } from '../content';
+import { isTrackId } from '../content';
 import { CATEGORIES, courses, type Course } from '../content/courses';
+import { roadmaps } from '../content/roadmaps';
 import { EASE_OUT } from '../lib/motion';
-import { useProgress } from '../lib/progress-context';
+import { courseProgress, useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
 
 const container = 'mx-auto max-w-[1680px] px-5 md:px-8';
@@ -18,7 +19,6 @@ export function Catalog() {
   const { state } = useProgress();
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>('הכל');
   const [q, setQ] = useState('');
-  const done = allLessons.filter((x) => state.completed.includes(x.key)).length;
   const liveCount = courses.filter((c) => c.status === 'live').length;
 
   const list = useMemo(() => {
@@ -72,7 +72,7 @@ export function Catalog() {
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.4, ease: EASE_OUT, delay: Math.min(index * 0.04, 0.32) }}
               >
-                <CourseCard course={course} progress={course.status === 'live' ? Math.round(done / allLessons.length * 100) : 0} />
+                <CourseCard course={course} progress={isTrackId(course.id) ? courseProgress(state, course.id).pct : 0} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -85,6 +85,7 @@ export function Catalog() {
 
 export function CourseSoon({ course }: { course: Course }) {
   const live = courses.find((c) => c.status === 'live')!;
+  const plan = roadmaps[course.id];
   return (
     <MarketingShell>
       <main className="course-page course-preview">
@@ -108,11 +109,21 @@ export function CourseSoon({ course }: { course: Course }) {
               {course.syllabus.map((s, i) => (
                 <li key={s}>
                   <span className="curriculum-number">{i + 1}</span>
-                  <span className="min-w-0 flex-1 text-[15px] leading-7 text-fg">{s}</span>
-                  <LockKeyhole className="h-3.5 w-3.5 shrink-0 text-faint" aria-label="עדיין לא זמין" />
+                  <div className="min-w-0 flex-1 text-[15px] leading-7">
+                    <h3 className="font-semibold text-fg">{s}</h3>
+                    {plan && <p className="mt-1 text-muted">{plan.milestones[i]}</p>}
+                  </div>
                 </li>
               ))}
             </ol>
+            {plan && <section className="mt-10 border-t border-line pt-7" aria-labelledby="preview-project">
+              <h2 id="preview-project" className="text-[20px] font-semibold text-fg">הפרויקט המתוכנן</h2>
+              <p className="mt-3 text-[16px] leading-8 text-muted">{plan.project}</p>
+              <h3 className="mt-5 text-[15px] font-semibold text-fg">איך תדעו שהפרויקט מוכן?</h3>
+              <ul className="mt-2 list-disc space-y-2 ps-5 text-[15px] leading-7 text-muted">
+                {plan.acceptance.map((check) => <li key={check}>{check}</li>)}
+              </ul>
+            </section>}
           </div>
           <aside className="course-context">
             <section>
@@ -121,6 +132,7 @@ export function CourseSoon({ course }: { course: Course }) {
               <LedgerRow label="היקף משוער" value={`כ-${course.hours} שעות`} />
               <LedgerRow label="רמה" value={course.level} />
               <LedgerRow label="תחום" value={course.category} />
+              {plan && <div className="mt-5"><h3 className="text-[14px] font-semibold text-fg">ידע מקדים מומלץ</h3><p>{plan.prerequisite}</p></div>}
             <p dir="ltr" className="mt-5 text-end text-[13px] leading-7 text-faint">
               {course.tags.join(' · ')}
             </p>
@@ -128,7 +140,7 @@ export function CourseSoon({ course }: { course: Course }) {
             <section>
               <h2>בינתיים, אפשר להתחיל כאן</h2>
               <a className="mt-3 block text-[16px] font-semibold text-fg hover:text-brand" href={href.home()}>{live.title}</a>
-              <p className="mt-2 text-[15px] leading-7 text-muted">המסלול הפתוח נותן את הבסיס לכל שאר הקורסים. כדאי להתחיל בו.</p>
+              <p className="mt-2 text-[15px] leading-7 text-muted">אפשר ללמוד את יסודות הפיתוח כבר עכשיו, או לבחור מסלול פתוח נוסף בקטלוג.</p>
               <a href={href.home()} className="btn-ice mt-5">
                 למסלול Full Stack <ArrowLeft className="h-4 w-4" />
               </a>

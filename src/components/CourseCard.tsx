@@ -6,7 +6,7 @@ import { courseVisual } from './course-visuals';
 export function CourseCard({ course, progress = 0 }: { course: Course; progress?: number }) {
   const live = course.status === 'live';
   return (
-    <a href={live ? href.home() : href.course(course.id)} className={`course-card group ${live ? 'course-card-live' : ''}`}>
+    <a href={href.course(course.id)} className={`course-card group ${live ? 'course-card-live' : ''}`}>
       <img className="course-cover" src={courseVisual(course)} alt="" width="1000" height="640" loading="lazy" decoding="async" />
       <p className={`self-start text-[13px] ${live ? 'course-status' : 'text-faint'}`}>{live ? 'זמין ללמידה' : 'בקרוב'}</p>
       <h3 className="mt-3 text-[20px] font-semibold leading-snug text-fg transition-colors group-hover:text-ice">{course.title}</h3>

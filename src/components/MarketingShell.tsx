@@ -1,7 +1,8 @@
 import { Check, Code2, Menu, Star, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
+import { trackForModule } from '../content';
+import { useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
-import { MotionToggle } from './MotionToggle';
 
 const LINKS = [
   { label: 'קורסים', to: href.courses() },
@@ -34,6 +35,8 @@ export function Wordmark() {
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const { state } = useProgress();
+  const resumeHref = state.lastVisited ? href.course(trackForModule(state.lastVisited.moduleId)) : href.home();
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-night">
       <nav className="mx-auto flex h-20 max-w-[1680px] items-center justify-between gap-4 px-5 md:px-8">
@@ -46,9 +49,8 @@ export function SiteNav() {
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <MotionToggle className="hidden sm:inline-flex" />
           <div className="hidden lg:block">
-            <a href={href.home()} className="btn-ice">להמשיך ללמוד</a>
+            <a href={resumeHref} className="btn-ice">להמשיך ללמוד</a>
           </div>
           <button
             onClick={() => setOpen((o) => !o)}
@@ -63,7 +65,7 @@ export function SiteNav() {
       </nav>
       {open && (
         <div id="mobile-menu" className="border-t border-line bg-night md:hidden">
-          {[...LINKS, { label: 'להמשיך ללמוד', to: href.home() }].map((l) => (
+          {[...LINKS, { label: 'להמשיך ללמוד', to: resumeHref }].map((l) => (
             <a key={l.label} href={l.to} onClick={() => setOpen(false)} className="rule-b block px-5 py-3.5 text-[15.5px] text-muted hover:text-fg">
               {l.label}
             </a>

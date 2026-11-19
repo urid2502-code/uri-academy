@@ -1,12 +1,13 @@
 import { BookA, CheckCircle2, ChevronLeft, Circle, Code2, GitCompareArrows, Home, LayoutGrid, MessagesSquare, Moon, Network, PanelRightClose, Search, Sun, Swords, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { allLessons, lessonKey, modules, search, STAGES } from '../content';
+import { getTrack, lessonKey, search, type TrackId } from '../content';
 import { useProgress } from '../lib/progress-context';
 import { href, navigate, useTheme, type Route } from '../lib/router';
 import type { Stage } from '../types';
 import { ModuleIcon, ProgressBar } from './ui';
 
 interface Props {
+  track: TrackId;
   route: Route;
   searchExtra: { title: string; subtitle: string; href: string; body: string }[];
   onNavigate?: () => void;
@@ -14,7 +15,8 @@ interface Props {
   onCollapse?: () => void;
 }
 
-export function Sidebar({ route, searchExtra, onNavigate, onCollapse }: Props) {
+export function Sidebar({ track, route, searchExtra, onNavigate, onCollapse }: Props) {
+  const { label, lessons: allLessons, modules, stages } = getTrack(track);
   const { state, isComplete } = useProgress();
   const [theme, toggleTheme] = useTheme();
   const [query, setQuery] = useState('');
@@ -65,7 +67,7 @@ export function Sidebar({ route, searchExtra, onNavigate, onCollapse }: Props) {
             </div>
             <div>
               <div className="text-[14px] font-semibold leading-5 text-fg">האקדמיה של אורי</div>
-              <div className="text-[12px] text-faint">מסלול Full Stack</div>
+              <div className="text-[12px] text-faint">מסלול {label}</div>
             </div>
           </a>
           <div className="flex items-center">
@@ -150,13 +152,13 @@ export function Sidebar({ route, searchExtra, onNavigate, onCollapse }: Props) {
         <a href={href.courses()} onClick={() => onNavigate?.()} className={navItem(false)}>
           <LayoutGrid className="h-4 w-4" /> כל הקורסים
         </a>
-        <a href={href.home()} onClick={() => onNavigate?.()} className={navItem(route.name === 'home')}>
-          <Home className="h-4 w-4" /> דף הקורס: Full Stack
+        <a href={href.course(track)} onClick={() => onNavigate?.()} className={navItem(route.name === 'home' || (route.name === 'course' && route.courseId === track))}>
+          <Home className="h-4 w-4" /> דף הקורס: {label}
         </a>
 
         {([1, 2, 3] as Stage[]).map((stage) => (
-          <div key={stage}>
-            <div className="mb-1.5 mt-5 px-3 text-[11.5px] font-bold text-faint">{STAGES[stage].title}</div>
+          modules.some((m) => m.stage === stage) && <div key={stage}>
+            <div className="mb-1.5 mt-5 px-3 text-[11.5px] font-bold text-faint">{stages[stage].title}</div>
             <div className="space-y-0.5">
               {modules
                 .filter((m) => m.stage === stage)

@@ -2,7 +2,7 @@ import { CircleHelp, Heart, Lightbulb, MessageCircle, MessagesSquare, Trash2, ty
 import { AnimatePresence, motion } from 'motion/react';
 import { useId, useState, type FormEvent } from 'react';
 import { SlidingTabs } from '../components/Tabs';
-import { allLessons, findLesson, modules } from '../content';
+import { academyLessons, findLesson, getTrack, modules } from '../content';
 import { POST_LIMIT, useCommunity, type Post, type PostKind } from '../lib/community';
 import { EASE_OUT } from '../lib/motion';
 import { href } from '../lib/router';
@@ -138,7 +138,7 @@ function Composer({ onSubmit }: { onSubmit: (input: Pick<Post, 'kind' | 'body' |
           <label htmlFor={`${id}-lesson`} className="sr-only">שיעור קשור</label>
           <select id={`${id}-lesson`} value={lesson} onChange={(event) => setLesson(event.target.value)} className="community-select w-full">
             <option value="">ללא שיעור מקושר</option>
-            {modules.map((module) => (
+            {[...modules, ...getTrack('java').modules].map((module) => (
               <optgroup key={module.id} label={module.short}>
                 {module.lessons.map((item) => <option key={item.id} value={`${module.id}-${item.id}`}>{item.title}</option>)}
               </optgroup>
@@ -159,7 +159,7 @@ function PostCard({ post, onLike, onComment, onRemove }: { post: Post; onLike: (
   const [confirming, setConfirming] = useState(false);
   const meta = KIND_META[post.kind];
   const Icon = meta.icon;
-  const linked = post.lesson ? allLessons.find((item) => item.key === post.lesson) : undefined;
+  const linked = post.lesson ? academyLessons.find((item) => item.key === post.lesson) : undefined;
   const lessonTarget = linked ? findLesson(linked.module.id, linked.lesson.id) : null;
 
   function submitComment(event: FormEvent) {

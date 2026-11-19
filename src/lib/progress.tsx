@@ -1,5 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { empty, load, ProgressContext, STORAGE_KEY, type ProgressApi, type ProgressState, type QuizResult, type QuizDraft } from './progress-context';
+import { trackForModule } from '../content';
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ProgressState>(load);
@@ -76,9 +77,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const visit = useCallback((moduleId: string, lessonId: string) => {
-    setState((s) =>
-      s.lastVisited?.moduleId === moduleId && s.lastVisited.lessonId === lessonId ? s : { ...s, lastVisited: { moduleId, lessonId } },
-    );
+    setState((s) => {
+      if (s.lastVisited?.moduleId === moduleId && s.lastVisited.lessonId === lessonId) return s;
+      const previous = s.lastVisited;
+      const current = { moduleId, lessonId };
+      return {
+        ...s,
+        lastVisited: current,
+        lastByTrack: {
+          ...s.lastByTrack,
+          ...(previous && { [trackForModule(previous.moduleId)]: previous }),
+          [trackForModule(moduleId)]: current,
+        },
+      };
+    });
   }, []);
 
   const reset = useCallback(() => setState(empty), []);

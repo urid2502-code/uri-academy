@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useMotionOff } from '../lib/motion-pref';
+import { useReducedMotion } from 'motion/react';
 
 export function CourseHeader({ title, description, image, meta, actions }: {
   title: string;
@@ -9,7 +9,7 @@ export function CourseHeader({ title, description, image, meta, actions }: {
   meta?: ReactNode;
   actions?: ReactNode;
 }) {
-  const { paused } = useMotionOff();
+  const paused = useReducedMotion();
   return (
     <header className="course-header">
       <div className="course-header-art" aria-hidden="true">

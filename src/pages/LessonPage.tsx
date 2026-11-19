@@ -2,7 +2,7 @@ import { ArrowLeft, CheckCircle2, Circle, Clock, Focus } from 'lucide-react';
 import { useEffect } from 'react';
 import { LessonPlayer } from '../components/LessonPlayer';
 import { Pill } from '../components/ui';
-import { LEVEL_LABEL, lessonKey } from '../content';
+import { getTrack, LEVEL_LABEL, lessonKey, trackForModule } from '../content';
 import { useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
 import type { Lesson, Module } from '../types';
@@ -15,6 +15,7 @@ const LEVEL_CLS = {
 
 export function LessonPage({ module, lesson }: { module: Module; lesson: Lesson }) {
   const key = lessonKey(module, lesson);
+  const track = trackForModule(module.id);
   const { isComplete, setComplete, visit } = useProgress();
   const complete = isComplete(key);
   const lessonIndex = module.lessons.indexOf(lesson);
@@ -26,8 +27,8 @@ export function LessonPage({ module, lesson }: { module: Module; lesson: Lesson 
   return (
     <div className="course-page lesson-page">
       <nav className="course-breadcrumb" aria-label="מיקום בשיעור">
-        <a href={href.home()} className="hover:text-fg">
-          מסלול Full Stack
+        <a href={href.course(track)} className="hover:text-fg">
+          מסלול {getTrack(track).label}
         </a>
         <ArrowLeft className="h-3 w-3" />
         <a href={href.module(module.id)} className="hover:text-fg">

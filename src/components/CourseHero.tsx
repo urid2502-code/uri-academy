@@ -1,10 +1,9 @@
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform, type MotionValue, type PanInfo } from 'motion/react';
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { allLessons, findLesson } from '../content';
+import { isTrackId } from '../content';
 import { courses } from '../content/courses';
-import { useMotionOff } from '../lib/motion-pref';
-import { useProgress } from '../lib/progress-context';
+import { courseProgress, useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
 import { courseVisual } from './course-visuals';
 
@@ -29,7 +28,6 @@ function LoopSlot({ index, offset, center, step, children }: {
 export function CourseHero() {
   const { state } = useProgress();
   const reducedMotion = useReducedMotion();
-  const { paused } = useMotionOff();
   const [position, setPosition] = useState(INITIAL_COURSE);
   const activeIndex = wrap(position);
   const [geometry, setGeometry] = useState({ width: 0, cardWidth: 300 });
@@ -41,12 +39,9 @@ export function CourseHero() {
   const step = geometry.cardWidth + GAP;
   const center = (geometry.width - geometry.cardWidth) / 2;
   const selectedOffset = center - position * step;
-  const live = course.status === 'live';
-  const last = state.lastVisited ? findLesson(state.lastVisited.moduleId, state.lastVisited.lessonId) : null;
-  const target = last && !state.completed.includes(`${last.module.id}-${last.lesson.id}`)
-    ? last
-    : allLessons.find((x) => !state.completed.includes(x.key));
-  const liveHref = target ? href.lesson(target.module.id, target.lesson.id) : href.home();
+  const progress = isTrackId(course.id) ? courseProgress(state, course.id) : null;
+  const target = progress?.resume;
+  const actionHref = target ? href.lesson(target.module.id, target.lesson.id) : href.course(course.id);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -108,7 +103,7 @@ export function CourseHero() {
         <AnimatePresence initial={false}>
           <motion.img
             key={course.id}
-            src={courseVisual(course, !paused)}
+            src={courseVisual(course, !reducedMotion)}
             alt=""
             className="hero-backdrop"
             initial={{ opacity: 0 }}
@@ -123,8 +118,8 @@ export function CourseHero() {
         <h1 className="hero-title">הכישורים של מחר.<br />מתחילים כאן.</h1>
         <p>ללמוד. לבנות. להבין לעומק.<br className="sm:hidden" /> מסלולי לימוד בעברית, מהיסודות ועד הקוד שבאמת עובד.</p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
-          <a className="btn-ice btn-ice-lg" href={live ? liveHref : href.course(course.id)}>
-            {live ? state.lastVisited || state.completed.length > 0 ? 'להמשיך ללמוד' : 'מתחילים ללמוד' : 'לצפייה בסילבוס'}
+          <a className="btn-ice btn-ice-lg" href={actionHref}>
+            {progress ? progress.last || progress.done ? 'להמשיך ללמוד' : 'מתחילים ללמוד' : 'לצפייה בסילבוס'}
             <ArrowLeft className="h-4 w-4" />
           </a>
           <a href={href.courses()} className="hero-catalog-link">כל הקורסים</a>

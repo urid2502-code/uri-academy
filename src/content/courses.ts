@@ -1,4 +1,4 @@
-import { allLessons, glossary, modules } from './index';
+import { allLessons, getTrack, glossary, modules } from './index';
 import { comparisons } from './comparisons';
 import { interviewQA, scenarios } from './interview';
 
@@ -20,6 +20,7 @@ export interface Course {
 }
 
 const fullstackHours = Math.round(allLessons.reduce((a, x) => a + x.lesson.minutes, 0) / 60);
+const java = getTrack('java');
 
 export const courses: Course[] = [
   {
@@ -36,6 +37,21 @@ export const courses: Course[] = [
     icon: 'layers',    tags: ['TypeScript', 'React', 'Node.js', 'PostgreSQL', 'Kafka', 'LLM', 'Kubernetes'],
     syllabus: modules.map((m) => m.title),
     href: '#/course/fullstack',
+  },
+  {
+    id: 'java',
+    title: 'Java מאפס ועד Backend',
+    subtitle: 'מ-Hello World ועד שירות ספרייה עם API, בדיקות ומקביליות',
+    description: 'מסלול מעשי בעברית עם JDK 21: יסודות השפה, מודלים, Collections, Streams, בדיקות, מקביליות ופרויקט Backend.',
+    status: 'live',
+    category: 'פיתוח',
+    level: 'מתחיל ← מתקדם',
+    hours: Math.round(java.lessons.reduce((sum, { lesson }) => sum + lesson.minutes, 0) / 60),
+    lessons: java.lessons.length,
+    icon: 'terminal',
+    tags: ['Java', 'JDK 21', 'JVM', 'Backend', 'HTTP'],
+    syllabus: java.modules.map((m) => m.title),
+    href: '#/course/java',
   },
   {
     id: 'ai-engineering',
@@ -106,14 +122,14 @@ export const courses: Course[] = [
     id: 'security',
     title: 'Cybersecurity למפתחים',
     subtitle: 'OWASP Top 10, Authentication ו-Secure Coding',
-    description: 'איך תוקפים חושבים ואיך כותבים קוד שמחזיק: XSS, SQL Injection, CSRF, ניהול סודות, OAuth ו-Threat Modeling.',
+    description: 'איך כותבים ובודקים בקרות הגנה: אימות קלט, שאילתות פרמטריות, ניהול סודות, OAuth ו-Threat Modeling.',
     status: 'soon',
     category: 'אבטחה',
     level: 'ביניים',
     hours: 10,
     lessons: 18,
     icon: 'shield',    tags: ['OWASP', 'OAuth', 'XSS', 'Threat Modeling'],
-    syllabus: ['איך תוקפים חושבים', 'OWASP Top 10', 'Authentication ו-OAuth', 'ניהול סודות והצפנה', 'Secure Code Review', 'Threat Modeling'],
+    syllabus: ['גבולות אמון וסיכוני אפליקציה', 'בקרות הגנה ו-OWASP Top 10', 'Authentication ו-OAuth', 'ניהול סודות והצפנה', 'Secure Code Review', 'Threat Modeling'],
   },
   {
     id: 'react-native',
@@ -185,11 +201,11 @@ export const courses: Course[] = [
 export const CATEGORIES: ('הכל' | CourseCategory)[] = ['הכל', 'פיתוח', 'AI ו-Data', 'תשתיות', 'קריירה', 'אבטחה', 'עיצוב'];
 
 export const platformStats = {
-  lessons: allLessons.length,
-  modules: modules.length,
-  quizQuestions: allLessons.reduce((a, x) => a + x.lesson.quiz.length, 0),
+  lessons: allLessons.length + java.lessons.length,
+  modules: modules.length + java.modules.length,
+  quizQuestions: [...allLessons, ...java.lessons].reduce((a, x) => a + x.lesson.quiz.length, 0),
   terms: glossary.length,
-  exercises: allLessons.length,
+  exercises: allLessons.length + java.lessons.length,
   comparisons: comparisons.length,
   interview: interviewQA.length + scenarios.length,
   courses: courses.length,

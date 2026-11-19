@@ -2,13 +2,11 @@ import { ArrowUpLeft, Code2, Menu } from 'lucide-react';
 import { motion, MotionConfig, useReducedMotion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
-import { MotionToggle } from './components/MotionToggle';
-import { findLesson, modules } from './content';
+import { findLesson, findModule, getTrack, trackForModule } from './content';
 import { comparisons } from './content/comparisons';
 import { courses } from './content/courses';
 import { interviewQA, scenarios } from './content/interview';
 import { EASE_OUT } from './lib/motion';
-import { useMotionOff } from './lib/motion-pref';
 import { usePersistedFlag } from './lib/persisted';
 import { ProgressProvider } from './lib/progress';
 import { href, useRoute } from './lib/router';
@@ -37,6 +35,8 @@ function NotFound() {
 
 function Shell() {
   const route = useRoute();
+  const track = route.name === 'course' && route.courseId === 'java' ? 'java'
+    : route.name === 'lesson' || route.name === 'module' ? trackForModule(route.moduleId) : 'fullstack';
   const reducedMotion = useReducedMotion();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [menuHidden, setMenuHidden] = usePersistedFlag('uri-academy:menu-hidden:v1');
@@ -90,16 +90,20 @@ function Shell() {
     case 'courses':
       return <Catalog />;
     case 'course': {
+      if (track === 'java') {
+        page = <Home key="java" track="java" />;
+        break;
+      }
       const c = courses.find((x) => x.id === route.courseId && x.status === 'soon');
       if (c) return <CourseSoon key={c.id} course={c} />;
       page = <NotFound />;
       break;
     }
     case 'home':
-      page = <Home />;
+      page = <Home key="fullstack" track="fullstack" />;
       break;
     case 'module': {
-      const m = modules.find((x) => x.id === route.moduleId);
+      const m = findModule(route.moduleId);
       page = m ? <ModulePage module={m} /> : <NotFound />;
       break;
     }
@@ -140,11 +144,11 @@ function Shell() {
         transition={{ duration: reducedMotion ? 0 : 0.28, ease: EASE_OUT }}
         inert={menuHidden}
       >
-        <Sidebar route={route} searchExtra={searchExtra} onCollapse={() => setMenuHidden(true)} />
+        <Sidebar key={track} track={track} route={route} searchExtra={searchExtra} onCollapse={() => setMenuHidden(true)} />
       </motion.div>
       {mobileOpen && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
-          <Sidebar route={route} searchExtra={searchExtra} onNavigate={() => setMobileOpen(false)} />
+          <Sidebar key={track} track={track} route={route} searchExtra={searchExtra} onNavigate={() => setMobileOpen(false)} />
           <button className="flex-1 bg-black/50" aria-label="סגור תפריט" onClick={() => setMobileOpen(false)} />
         </div>
       )}
@@ -160,9 +164,8 @@ function Shell() {
             <Menu className="h-5 w-5" />
           </button>
           <Code2 className="hidden h-4 w-4 text-brand sm:block" />
-          <a href={href.home()} className="min-w-0 flex-1 truncate text-[13px] font-medium text-muted">מסלול Full Stack</a>
+          <a href={href.course(track)} className="min-w-0 flex-1 truncate text-[13px] font-medium text-muted">מסלול {getTrack(track).label}</a>
           <a href={href.courses()} className="flex shrink-0 items-center gap-2 text-[12px] text-faint hover:text-fg">כל הקורסים<ArrowUpLeft className="h-3.5 w-3.5" /></a>
-          <MotionToggle />
         </header>
         <main id="main-scroll" className="flex-1 overflow-y-auto">
           {page}
@@ -173,9 +176,8 @@ function Shell() {
 }
 
 export default function App() {
-  const { userOff } = useMotionOff();
   return (
-    <MotionConfig reducedMotion={userOff ? 'always' : 'user'}>
+    <MotionConfig reducedMotion="user">
       <ProgressProvider>
         <Shell />
       </ProgressProvider>

@@ -1,6 +1,6 @@
 import { ArrowLeft, BookA, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { glossary, modules } from '../content';
+import { findModule, glossary } from '../content';
 import { href } from '../lib/router';
 
 export function Glossary({ focus }: { focus?: string }) {
@@ -67,7 +67,7 @@ export function Glossary({ focus }: { focus?: string }) {
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               {items.map((g) => {
-                const mod = modules.find((m) => m.id === g.moduleId);
+                const mod = findModule(g.moduleId);
                 const isFocus = focus?.toLowerCase() === g.term.toLowerCase();
                 return (
                   <div

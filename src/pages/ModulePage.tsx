@@ -2,25 +2,29 @@ import { ArrowLeft, Check, Clock3, Play } from 'lucide-react';
 import { CourseHeader } from '../components/CourseHeader';
 import { moduleVisual } from '../components/course-visuals';
 import { ProgressBar } from '../components/ui';
-import { LEVEL_LABEL, lessonKey, STAGES } from '../content';
+import { getTrack, LEVEL_LABEL, lessonKey, trackForModule } from '../content';
+import { fullstackPractice } from '../content/fullstack-practice';
 import { useProgress } from '../lib/progress-context';
 import { href } from '../lib/router';
 import type { Module } from '../types';
 
 export function ModulePage({ module }: { module: Module }) {
   const { isComplete, state } = useProgress();
+  const track = trackForModule(module.id);
+  const { label, stages } = getTrack(track);
+  const practice = fullstackPractice[module.id];
   const done = module.lessons.filter((l) => isComplete(lessonKey(module, l))).length;
   const minutes = module.lessons.reduce((sum, l) => sum + l.minutes, 0);
   const firstOpen = module.lessons.find((l) => !isComplete(lessonKey(module, l))) ?? module.lessons[0];
 
   return (
     <div className="course-page">
-      <nav className="course-breadcrumb" aria-label="מיקום במסלול"><a href={href.home()}>מסלול Full Stack</a><ArrowLeft className="h-3 w-3" /><span>מודול {module.number}</span></nav>
+      <nav className="course-breadcrumb" aria-label="מיקום במסלול"><a href={href.course(track)}>מסלול {label}</a><ArrowLeft className="h-3 w-3" /><span>מודול {module.number}</span></nav>
       <CourseHeader
         title={module.title}
         description={module.tagline}
         image={(motion) => moduleVisual(module, motion)}
-        meta={<><span>{STAGES[module.stage].title}</span><span>{module.lessons.length} שיעורים</span><span><Clock3 className="h-4 w-4" />{minutes} דקות</span></>}
+        meta={<><span>{stages[module.stage].title}</span><span>{module.lessons.length} שיעורים</span><span><Clock3 className="h-4 w-4" />{minutes} דקות</span></>}
         actions={<a className="btn-ice" href={href.lesson(module.id, firstOpen.id)}><Play className="h-4 w-4" />{done === 0 ? 'להתחיל את המודול' : done === module.lessons.length ? 'לחזור על המודול' : 'להמשיך ללמוד'}</a>}
       />
       <div className="course-detail-grid">
@@ -38,6 +42,14 @@ export function ModulePage({ module }: { module: Module }) {
               </a></li>;
             })}
           </ol>
+          {practice && <section className="mt-10 border-t border-line pt-7" aria-labelledby="module-practice">
+            <h2 id="module-practice" className="text-[20px] font-semibold text-fg">מעבדת המשך · שירות משימות</h2>
+            <p className="mt-3 text-[15px] leading-8 text-muted">{practice.task}</p>
+            <h3 className="mt-5 text-[14px] font-semibold text-fg">בדיקות קבלה</h3>
+            <ul className="mt-2 list-disc space-y-2 ps-5 text-[15px] leading-7 text-muted">
+              {practice.checks.map((check) => <li key={check}>{check}</li>)}
+            </ul>
+          </section>}
         </section>
         <aside className="course-context">
           <section><h2>ההתקדמות שלך</h2><div className="my-3 flex justify-between text-[13px] text-muted"><span>{done} שיעורים הושלמו</span><span className="tabular text-brand">{Math.round(done / module.lessons.length * 100)}%</span></div><ProgressBar value={done / module.lessons.length * 100} /></section>

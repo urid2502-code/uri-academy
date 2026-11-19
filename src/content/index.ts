@@ -9,6 +9,7 @@ import { module7 } from './m7';
 import { module8 } from './m8';
 import { module9 } from './m9';
 import { module10 } from './m10';
+import { javaModules } from './java';
 
 export const modules: Module[] = [module1, module2, module3, module4, module5, module6, module7, module8, module9, module10];
 
@@ -18,27 +19,46 @@ export const STAGES: Record<Stage, { title: string; subtitle: string }> = {
   3: { title: 'שלב 3 · רמת Senior', subtitle: 'Real-time, Queues, AI ו-Cloud – מה שמבדיל מפתח בכיר' },
 };
 
+export type TrackId = 'fullstack' | 'java';
+const tracks = {
+  fullstack: { label: 'Full Stack', modules, stages: STAGES },
+  java: { label: 'Java', modules: javaModules, stages: {
+    1: { title: 'שלב 1 · יסודות השפה', subtitle: 'מהרצה ראשונה למודל עם אובייקטים ואוספים.' },
+    2: { title: 'שלב 2 · תוכנה אמינה', subtitle: 'עיבוד נתונים, טיפול בשגיאות ובדיקות.' },
+    3: { title: 'שלב 3 · Backend ב-Java', subtitle: 'מקביליות, HTTP ופרויקט מסכם.' },
+  } },
+};
+
 export const LEVEL_LABEL = { basic: 'בסיס', intermediate: 'ביניים', advanced: 'מתקדם' } as const;
 
-export const allLessons = modules.flatMap((m) => m.lessons.map((l) => ({ module: m, lesson: l, key: `${m.id}-${l.id}` })));
+const flatten = (list: Module[]) => list.flatMap((m) => m.lessons.map((l) => ({ module: m, lesson: l, key: `${m.id}-${l.id}` })));
+export const allLessons = flatten(modules);
+const javaLessons = flatten(javaModules);
+export const academyLessons = [...allLessons, ...javaLessons];
+
+export const isTrackId = (id: string): id is TrackId => id === 'fullstack' || id === 'java';
+export const trackForModule = (id: string): TrackId => javaModules.some((m) => m.id === id) ? 'java' : 'fullstack';
+export const getTrack = (id: TrackId) => ({ ...tracks[id], lessons: id === 'java' ? javaLessons : allLessons });
+export const findModule = (id: string) => tracks[trackForModule(id)].modules.find((m) => m.id === id);
 
 export const lessonKey = (m: Module | string, l: Lesson | string) =>
   `${typeof m === 'string' ? m : m.id}-${typeof l === 'string' ? l : l.id}`;
 
 export function findLesson(moduleId: string, lessonId: string) {
-  const module = modules.find((m) => m.id === moduleId);
+  const module = findModule(moduleId);
   const lesson = module?.lessons.find((l) => l.id === lessonId);
   return module && lesson ? { module, lesson } : null;
 }
 
 export function neighbours(moduleId: string, lessonId: string) {
-  const idx = allLessons.findIndex((x) => x.module.id === moduleId && x.lesson.id === lessonId);
-  return { prev: allLessons[idx - 1], next: allLessons[idx + 1] };
+  const { lessons } = getTrack(trackForModule(moduleId));
+  const idx = lessons.findIndex((x) => x.module.id === moduleId && x.lesson.id === lessonId);
+  return idx < 0 ? {} : { prev: lessons[idx - 1], next: lessons[idx + 1] };
 }
 
 export const glossary = (() => {
   const seen = new Map<string, { term: string; he?: string; def: string; moduleId: string; lessonId: string; lessonTitle: string }>();
-  for (const { module, lesson } of allLessons) {
+  for (const { module, lesson } of academyLessons) {
     for (const t of lesson.keyTerms) {
       const k = t.term.toLowerCase();
       if (!seen.has(k)) seen.set(k, { ...t, moduleId: module.id, lessonId: lesson.id, lessonTitle: lesson.title });
@@ -69,10 +89,10 @@ export function search(query: string, extra: { title: string; subtitle: string; 
     }
     return s;
   };
-  for (const { module, lesson } of allLessons) {
+  for (const { module, lesson } of academyLessons) {
     const body = [lesson.summary, lesson.tags.join(' '), lesson.intro, lesson.deepDive, lesson.keyTerms.map((k) => `${k.term} ${k.he ?? ''}`).join(' ')].join(' ');
     const s = scoreOf(lesson.title, body);
-    if (s) hits.push({ title: lesson.title, subtitle: `מודול ${module.number} · ${module.short}`, href: `#/m/${module.id}/${lesson.id}`, score: s });
+    if (s) hits.push({ title: lesson.title, subtitle: `${tracks[trackForModule(module.id)].label} · ${module.short}`, href: `#/m/${module.id}/${lesson.id}`, score: s });
   }
   for (const g of glossary) {
     const s = scoreOf(g.term, `${g.he ?? ''} ${g.def}`);

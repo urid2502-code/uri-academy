@@ -1,14 +1,13 @@
 import { MousePointerClick, Pause, Play, RotateCcw } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
-import { useMotionOff } from '../lib/motion-pref';
 import type { DiagramSpec } from '../types';
 import { toneHex, toneSoft, toneText } from './tones';
 
 const STEP_MS = 1100;
 
 export function FlowDiagram({ spec, autoPlay = false }: { spec: DiagramSpec; autoPlay?: boolean }) {
-  const { paused: reducedMotion } = useMotionOff();
+  const reducedMotion = useReducedMotion();
   const [active, setActive] = useState<string | null>(null);
   // `stage` is the column the playback has reached; null means the scenario has not started.
   const [stage, setStage] = useState<number | null>(null);
